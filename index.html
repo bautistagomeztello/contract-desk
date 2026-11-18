@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-g/bQGN3C0H+2VSdJbQs3iUM/y+M5E+qqBok29ZjwTWQ=' 'sha256-svI6rlBxVIBqryr+0LSds3m/FgViMenlVkiGeBPk2+Y='; worker-src blob:; style-src 'unsafe-inline'; connect-src 'none'; form-action 'none'; base-uri 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-g/bQGN3C0H+2VSdJbQs3iUM/y+M5E+qqBok29ZjwTWQ=' 'sha256-w6ZVTxMWIMRjkUMvGE+1r2oWtto3F56Vfv4sQMJN8VE='; worker-src blob:; style-src 'unsafe-inline'; connect-src 'none'; form-action 'none'; base-uri 'none'">
 <meta name="referrer" content="no-referrer">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="description" content="Compará el texto de dos contratos PDF, revisá los cambios y prepará un correo con las observaciones seleccionadas.">
@@ -17,6 +17,8 @@
 /* Comfortable reading sizes for document review. */
 .topbar{font-size:12px}.intro{font-size:14px}.steps li{font-size:12px}.steps small{font-size:10px}.section-heading h2{font-size:15px}.subtle{font-size:10px}.document-label h3{font-size:14px}.document-card>p{font-size:12px}.dropzone strong{font-size:13px}.dropzone>span:last-of-type,.file-meta{font-size:11px}summary,.check{font-size:11px}.method-note{font-size:11px}.empty-state h3{font-size:14px}.empty-state p{font-size:12px}.result-heading p,.stats p{font-size:12px}.tabs button,.text-button{font-size:11px}.diff-top label{font-size:12px}.type-tag{font-size:9px}.diff-context{font-size:12px}.diff-columns p{font-size:13px}.observation label{font-size:11px}.observation textarea{font-size:12px}.mail-title h3{font-size:13px}.mail-title p,.mail-card>label{font-size:11px}.mail-footnote{font-size:11px}input:not([type=checkbox]):not([type=file]),select{font-size:13px}.draft-grid label,.draft-body-label{font-size:12px}#draft-body{font-size:14px}.draft-actions>span{font-size:11px}
 @media(max-width:600px){.intro{font-size:12px}.topbar{font-size:10px}.steps li{font-size:10px}.method-note{font-size:10px}.tabs button,.text-button{font-size:10px}.diff-columns p{font-size:12px}.diff-context{font-size:11px}.stats p{font-size:9px}.section-heading h2{font-size:14px}.subtle{font-size:9px}}
+
+.diff-tags{display:flex;align-items:center;justify-content:flex-end;flex-wrap:wrap;gap:6px;margin-left:auto}.diff-tags .type-tag{margin-left:0}.repeat-tag{background:#e9f0fa;color:#244d76;font-size:10px;font-weight:600;padding:3px 7px;border-radius:4px;white-space:nowrap}.diff-location{color:#4a6176;font-size:11px;font-weight:600;overflow-wrap:anywhere}.diff-top label{flex-shrink:0}
 </style>
 </head>
 <body>
@@ -46,7 +48,7 @@
    <div id="empty-state" class="empty-state"><span class="empty-symbol">⇄</span><div><p>Cargá los dos PDF para ver los cambios y preparar la respuesta al vendedor.</p></div></div>
    <section class="results" id="results" hidden aria-labelledby="results-title">
     <div class="result-heading"><div><div class="eyebrow">REVISIÓN DE TEXTO</div><h2 id="results-title">Diferencias entre los contratos</h2><p id="result-description"></p></div><button id="clear" class="btn ghost">Limpiar revisión</button></div>
-    <div class="stats"><div><span id="count-total">0</span><p>Diferencias detectadas</p></div><div><span id="count-missing">0</span><p>Texto ausente</p></div><div><span id="count-changed">0</span><p>Texto modificado</p></div><div><span id="count-added">0</span><p>Texto agregado</p></div></div>
+    <div class="stats"><div><span id="count-total">0</span><p>Observaciones</p></div><div><span id="count-missing">0</span><p>Texto ausente</p></div><div><span id="count-changed">0</span><p>Texto modificado</p></div><div><span id="count-added">0</span><p>Texto agregado</p></div></div>
     <div class="review-layout"><div class="review-main"><div class="filter-row"><div class="tabs" role="group" aria-label="Filtrar diferencias"><button class="active" data-filter="all">Todas</button><button data-filter="missing">Ausentes</button><button data-filter="changed">Modificadas</button><button data-filter="added">Agregadas</button></div><button class="text-button" id="select-all">Seleccionar visibles</button></div><div id="difference-list"></div><p class="method-note">Una diferencia textual puede deberse al orden de lectura del PDF. Revisá el contexto antes de incluirla en el correo. No se evalúa el significado jurídico.</p></div>
      <aside class="mail-card"><div class="mail-title"><span class="mail-icon">✉</span><div><h3>Respuesta al vendedor</h3><p><span id="selected-count">0</span> observaciones seleccionadas</p></div></div><label for="seller-name">Nombre del vendedor</label><input id="seller-name" placeholder="Ej. María Pérez" autocomplete="off" spellcheck="false" autocorrect="off"><label for="seller-email">Correo del vendedor</label><input id="seller-email" type="email" placeholder="nombre@empresa.com" autocomplete="off" spellcheck="false" autocorrect="off"><label for="contract-ref">Referencia del contrato</label><input id="contract-ref" placeholder="Ej. Contrato 12345 / Cliente" autocomplete="off" spellcheck="false" autocorrect="off"><label for="language">Idioma del correo</label><select id="language" autocomplete="off"><option value="es">Español</option><option value="en">English</option><option value="pt">Português</option></select><button class="btn primary full" id="generate" disabled>Generar borrador <span>→</span></button><p class="mail-footnote">Se incluyen únicamente las observaciones que selecciones. El correo queda listo para tu revisión.</p></aside></div>
    </section>
@@ -587,7 +589,7 @@ const labelType = {missing:'Texto ausente',changed:'Texto modificado',added:'Tex
 const normalize = s => s.normalize('NFKC').replace(/\u00ad/g,'').replace(/\s+/g,' ').trim();
 const escapeHTML = s => String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const delayPaint = () => new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));
-const exampleFiles = {"original": "JVBERi0xLjMKJZOMi54gUmVwb3J0TGFiIEdlbmVyYXRlZCBQREYgZG9jdW1lbnQgKG9wZW5zb3VyY2UpCjEgMCBvYmoKPDwKL0YxIDIgMCBSIC9GMiAzIDAgUgo+PgplbmRvYmoKMiAwIG9iago8PAovQmFzZUZvbnQgL0hlbHZldGljYSAvRW5jb2RpbmcgL1dpbkFuc2lFbmNvZGluZyAvTmFtZSAvRjEgL1N1YnR5cGUgL1R5cGUxIC9UeXBlIC9Gb250Cj4+CmVuZG9iagozIDAgb2JqCjw8Ci9CYXNlRm9udCAvSGVsdmV0aWNhLUJvbGQgL0VuY29kaW5nIC9XaW5BbnNpRW5jb2RpbmcgL05hbWUgL0YyIC9TdWJ0eXBlIC9UeXBlMSAvVHlwZSAvRm9udAo+PgplbmRvYmoKNCAwIG9iago8PAovQ29udGVudHMgOCAwIFIgL01lZGlhQm94IFsgMCAwIDU5NS4yNzU2IDg0MS44ODk4IF0gL1BhcmVudCA3IDAgUiAvUmVzb3VyY2VzIDw8Ci9Gb250IDEgMCBSIC9Qcm9jU2V0IFsgL1BERiAvVGV4dCAvSW1hZ2VCIC9JbWFnZUMgL0ltYWdlSSBdCj4+IC9Sb3RhdGUgMCAvVHJhbnMgPDwKCj4+IAogIC9UeXBlIC9QYWdlCj4+CmVuZG9iago1IDAgb2JqCjw8Ci9QYWdlTW9kZSAvVXNlTm9uZSAvUGFnZXMgNyAwIFIgL1R5cGUgL0NhdGFsb2cKPj4KZW5kb2JqCjYgMCBvYmoKPDwKL0F1dGhvciAoYW5vbnltb3VzKSAvQ3JlYXRpb25EYXRlIChEOjIwMjYxMTE4MTYzODI3KzAwJzAwJykgL0NyZWF0b3IgKGFub255bW91cykgL0tleXdvcmRzICgpIC9Nb2REYXRlIChEOjIwMjYxMTE4MTYzODI3KzAwJzAwJykgL1Byb2R1Y2VyIChSZXBvcnRMYWIgUERGIExpYnJhcnkgLSBcKG9wZW5zb3VyY2VcKSkgCiAgL1N1YmplY3QgKHVuc3BlY2lmaWVkKSAvVGl0bGUgKENvbnRyYXRvIGZpY3RpY2lvIC0gb3JpZ2luYWwpIC9UcmFwcGVkIC9GYWxzZQo+PgplbmRvYmoKNyAwIG9iago8PAovQ291bnQgMSAvS2lkcyBbIDQgMCBSIF0gL1R5cGUgL1BhZ2VzCj4+CmVuZG9iago4IDAgb2JqCjw8Ci9GaWx0ZXIgWyAvQVNDSUk4NURlY29kZSAvRmxhdGVEZWNvZGUgXSAvTGVuZ3RoIDY4Mgo+PgpzdHJlYW0KR2FzMVw/I1EydCY6RGctZloxRXVjNWFoR2lRXFc1YV0wIUVKYF9CM19kODg1Nk8wRSVlSzxcXl9iKFMiWiZCLE5CNGJhZ3BFVzApT2w8ZSEhNE9zXl4uT0pBaj5HIkgsYG1NMkQxMzVoKSEnLSpZblplWlwzKlw4OTNCdDtPREZXdWhWW0xXWCpiR0kvUypWVlZxbFsuY2VvPGVuK1BAUSdbTnRYODpIPGsiU25CI0cjamtvRlhsREZnJWNUPiljRVA3LjtYLm08LzdcQC5HWmx0MTloSl1pOVtkSlEkIk5kYXVyWnBbWSdSZmo3Wl4pZkFuW25qQU5lLTMydGMzaTVwPyxwQzEoL1xlZC06WWNXJl1KbVkxNVhWZkxDT3JfJHNyWzBjIlouKy5dVkEnRWpsJmhtUTRaNGJlYT5QJE9MbltHVVNNZEU2Y1dGXTEla1xcKkolPEBiYlFJSSRAcWJAVW5DLUJKQ1JJWGcmVU5tZEBndGMsYiUiZ1xSXyFRcypaaF5BOEdMUz9NKyMsbSpMJXVaZGtlJT4rSGREUFxBSlw2LCk+P2RXTFYkaD9sdWAjKDFWLG0hcSw8QD9bPEgzJEpeRFtuQFxmV04xZiZkXXNGS3MlTUNhKWE3Z2VvZT5VXzpWYi9HO1pKR1JHMmxRKklvam1GZj5lbydeUl05MWI2UFdYOSY4NzJxYCZEPVVGXGlSLU8sP1ZKU0s/c2hacygjdU4tSD1JTTdPaDIwI1RgNWlzW0lBSGxGJkoncFc5WUhVbCVfZCRKMEg3MF9SbmpCLUNyIidiPlNnSGNeMz0yYExCcnQhT1AzKEsqNV4zYmxQWlFRcmRqZTBOQGVsOz8sQmBYWGBBJlFvbFlJLVhZPEtHOV8lLmpGcCprOyVTXVwjJ1Z+PmVuZHN0cmVhbQplbmRvYmoKeHJlZgowIDkKMDAwMDAwMDAwMCA2NTUzNSBmIAowMDAwMDAwMDYxIDAwMDAwIG4gCjAwMDAwMDAxMDIgMDAwMDAgbiAKMDAwMDAwMDIwOSAwMDAwMCBuIAowMDAwMDAwMzIxIDAwMDAwIG4gCjAwMDAwMDA1MjQgMDAwMDAgbiAKMDAwMDAwMDU5MiAwMDAwMCBuIAowMDAwMDAwODczIDAwMDAwIG4gCjAwMDAwMDA5MzIgMDAwMDAgbiAKdHJhaWxlcgo8PAovSUQgCls8YTIwOGQzNzJlYzI3YTcyNzBhNDNmZTA0NTIxNWY4YzI+PGEyMDhkMzcyZWMyN2E3MjcwYTQzZmUwNDUyMTVmOGMyPl0KJSBSZXBvcnRMYWIgZ2VuZXJhdGVkIFBERiBkb2N1bWVudCAtLSBkaWdlc3QgKG9wZW5zb3VyY2UpCgovSW5mbyA2IDAgUgovUm9vdCA1IDAgUgovU2l6ZSA5Cj4+CnN0YXJ0eHJlZgoxNzA0CiUlRU9GCg==", "received": "JVBERi0xLjMKJZOMi54gUmVwb3J0TGFiIEdlbmVyYXRlZCBQREYgZG9jdW1lbnQgKG9wZW5zb3VyY2UpCjEgMCBvYmoKPDwKL0YxIDIgMCBSIC9GMiAzIDAgUgo+PgplbmRvYmoKMiAwIG9iago8PAovQmFzZUZvbnQgL0hlbHZldGljYSAvRW5jb2RpbmcgL1dpbkFuc2lFbmNvZGluZyAvTmFtZSAvRjEgL1N1YnR5cGUgL1R5cGUxIC9UeXBlIC9Gb250Cj4+CmVuZG9iagozIDAgb2JqCjw8Ci9CYXNlRm9udCAvSGVsdmV0aWNhLUJvbGQgL0VuY29kaW5nIC9XaW5BbnNpRW5jb2RpbmcgL05hbWUgL0YyIC9TdWJ0eXBlIC9UeXBlMSAvVHlwZSAvRm9udAo+PgplbmRvYmoKNCAwIG9iago8PAovQ29udGVudHMgOCAwIFIgL01lZGlhQm94IFsgMCAwIDU5NS4yNzU2IDg0MS44ODk4IF0gL1BhcmVudCA3IDAgUiAvUmVzb3VyY2VzIDw8Ci9Gb250IDEgMCBSIC9Qcm9jU2V0IFsgL1BERiAvVGV4dCAvSW1hZ2VCIC9JbWFnZUMgL0ltYWdlSSBdCj4+IC9Sb3RhdGUgMCAvVHJhbnMgPDwKCj4+IAogIC9UeXBlIC9QYWdlCj4+CmVuZG9iago1IDAgb2JqCjw8Ci9QYWdlTW9kZSAvVXNlTm9uZSAvUGFnZXMgNyAwIFIgL1R5cGUgL0NhdGFsb2cKPj4KZW5kb2JqCjYgMCBvYmoKPDwKL0F1dGhvciAoYW5vbnltb3VzKSAvQ3JlYXRpb25EYXRlIChEOjIwMjYxMTE4MTYzODI3KzAwJzAwJykgL0NyZWF0b3IgKGFub255bW91cykgL0tleXdvcmRzICgpIC9Nb2REYXRlIChEOjIwMjYxMTE4MTYzODI3KzAwJzAwJykgL1Byb2R1Y2VyIChSZXBvcnRMYWIgUERGIExpYnJhcnkgLSBcKG9wZW5zb3VyY2VcKSkgCiAgL1N1YmplY3QgKHVuc3BlY2lmaWVkKSAvVGl0bGUgKENvbnRyYXRvIGZpY3RpY2lvIC0gcmVjaWJpZG8pIC9UcmFwcGVkIC9GYWxzZQo+PgplbmRvYmoKNyAwIG9iago8PAovQ291bnQgMSAvS2lkcyBbIDQgMCBSIF0gL1R5cGUgL1BhZ2VzCj4+CmVuZG9iago4IDAgb2JqCjw8Ci9GaWx0ZXIgWyAvQVNDSUk4NURlY29kZSAvRmxhdGVEZWNvZGUgXSAvTGVuZ3RoIDY4NQo+PgpzdHJlYW0KR2FzMVxhX29pZSdZTlRaazFDRlQvXiFWc2hcK1pJPlZwUzJYMTpHZjw1TG1HJT5tZCpVKiY4X2IiKkkuMHNrc2xjSEtLQE9tc2FIXS8lL3JNOiNyQlJBNFJAJFczU3BNS08zLG4vUUhpblFedDk/WDAwTk1FLDlNKStvTWxiTyljWkc/byprPiU+PihoL0FVS20yaiNmR2U6WjVaW0AoZUFiJShnLV46NjBmTkQzJGVabTNRQicxUEhbcCVJWCgwSSckPHVrYEpVcy0pZGZTYU5yNDdBYytXaCFMKVlQYmAwWy1PcW9Bc2UkIXFDZkIxJyJKXy8qaEg+TSRValBOXVxmR2FrWyk/aV5gQXNWJDlxc1RYXVRHNyxyXExUaTxPWiRePTc2Z0ExOD5JUiI2V3A1alxYMXBGRjxZQTZDNnVsYEAqODEsYCpjaEJzT15hVmo1TVJbRC1jTDZkOTc1PV4lWD1KY3NOOiFuPS49QSo9LG9wRkJzZEc2N2kjUzEqTyxbdFBuNm02TlErLWBsYS9QYENJNzQoTlBGK243TyxZaFthYGM8P3JLWT5cbVIxNiFgJDdxYGJGSWU0bD51U0ZFPjktNU1DI1kxdDVzNlZsMk9gMSlFU18qPVdnbHBNbVU3c0ErLjdiWXFGaSNxQE9WIkZpKE5OXT02alZCRTpFX04+QUA8ZHEtJSJuVmtVTlc7WU91ViVXNlQoKTg9XFcsXEtPKzshUFUsTm42TGZNVEFyIlMuMigiQU5DIWVWRUJHK2khXWU2bVVNJClSZmdAQzs2YmkvSmExbTxDYjZSYDNaLUVHLVFeVV08QjxVO1IobXAqLUJodFNqZjcxNVZKVURpLC1lcj9uTDZMZy1fMEImcSYmW3RudCZhK15JZmgqclZ1clUyJCF+PmVuZHN0cmVhbQplbmRvYmoKeHJlZgowIDkKMDAwMDAwMDAwMCA2NTUzNSBmIAowMDAwMDAwMDYxIDAwMDAwIG4gCjAwMDAwMDAxMDIgMDAwMDAgbiAKMDAwMDAwMDIwOSAwMDAwMCBuIAowMDAwMDAwMzIxIDAwMDAwIG4gCjAwMDAwMDA1MjQgMDAwMDAgbiAKMDAwMDAwMDU5MiAwMDAwMCBuIAowMDAwMDAwODczIDAwMDAwIG4gCjAwMDAwMDA5MzIgMDAwMDAgbiAKdHJhaWxlcgo8PAovSUQgCls8MGUwMDM4ZTU2ZTlkNjA4MDhlNTA1MjA1NjU2MDg2NWI+PDBlMDAzOGU1NmU5ZDYwODA4ZTUwNTIwNTY1NjA4NjViPl0KJSBSZXBvcnRMYWIgZ2VuZXJhdGVkIFBERiBkb2N1bWVudCAtLSBkaWdlc3QgKG9wZW5zb3VyY2UpCgovSW5mbyA2IDAgUgovUm9vdCA1IDAgUgovU2l6ZSA5Cj4+CnN0YXJ0eHJlZgoxNzA3CiUlRU9GCg=="};
+const exampleFiles = {"original": "JVBERi0xLjMKJZOMi54gUmVwb3J0TGFiIEdlbmVyYXRlZCBQREYgZG9jdW1lbnQgKG9wZW5zb3VyY2UpCjEgMCBvYmoKPDwKL0YxIDIgMCBSIC9GMiAzIDAgUgo+PgplbmRvYmoKMiAwIG9iago8PAovQmFzZUZvbnQgL0hlbHZldGljYSAvRW5jb2RpbmcgL1dpbkFuc2lFbmNvZGluZyAvTmFtZSAvRjEgL1N1YnR5cGUgL1R5cGUxIC9UeXBlIC9Gb250Cj4+CmVuZG9iagozIDAgb2JqCjw8Ci9CYXNlRm9udCAvSGVsdmV0aWNhLUJvbGQgL0VuY29kaW5nIC9XaW5BbnNpRW5jb2RpbmcgL05hbWUgL0YyIC9TdWJ0eXBlIC9UeXBlMSAvVHlwZSAvRm9udAo+PgplbmRvYmoKNCAwIG9iago8PAovQ29udGVudHMgMTUgMCBSIC9NZWRpYUJveCBbIDAgMCA1OTUuMjc1NiA4NDEuODg5OCBdIC9QYXJlbnQgMTQgMCBSIC9SZXNvdXJjZXMgPDwKL0ZvbnQgMSAwIFIgL1Byb2NTZXQgWyAvUERGIC9UZXh0IC9JbWFnZUIgL0ltYWdlQyAvSW1hZ2VJIF0KPj4gL1JvdGF0ZSAwIC9UcmFucyA8PAoKPj4gCiAgL1R5cGUgL1BhZ2UKPj4KZW5kb2JqCjUgMCBvYmoKPDwKL0NvbnRlbnRzIDE2IDAgUiAvTWVkaWFCb3ggWyAwIDAgNTk1LjI3NTYgODQxLjg4OTggXSAvUGFyZW50IDE0IDAgUiAvUmVzb3VyY2VzIDw8Ci9Gb250IDEgMCBSIC9Qcm9jU2V0IFsgL1BERiAvVGV4dCAvSW1hZ2VCIC9JbWFnZUMgL0ltYWdlSSBdCj4+IC9Sb3RhdGUgMCAvVHJhbnMgPDwKCj4+IAogIC9UeXBlIC9QYWdlCj4+CmVuZG9iago2IDAgb2JqCjw8Ci9Db250ZW50cyAxNyAwIFIgL01lZGlhQm94IFsgMCAwIDU5NS4yNzU2IDg0MS44ODk4IF0gL1BhcmVudCAxNCAwIFIgL1Jlc291cmNlcyA8PAovRm9udCAxIDAgUiAvUHJvY1NldCBbIC9QREYgL1RleHQgL0ltYWdlQiAvSW1hZ2VDIC9JbWFnZUkgXQo+PiAvUm90YXRlIDAgL1RyYW5zIDw8Cgo+PiAKICAvVHlwZSAvUGFnZQo+PgplbmRvYmoKNyAwIG9iago8PAovQ29udGVudHMgMTggMCBSIC9NZWRpYUJveCBbIDAgMCA1OTUuMjc1NiA4NDEuODg5OCBdIC9QYXJlbnQgMTQgMCBSIC9SZXNvdXJjZXMgPDwKL0ZvbnQgMSAwIFIgL1Byb2NTZXQgWyAvUERGIC9UZXh0IC9JbWFnZUIgL0ltYWdlQyAvSW1hZ2VJIF0KPj4gL1JvdGF0ZSAwIC9UcmFucyA8PAoKPj4gCiAgL1R5cGUgL1BhZ2UKPj4KZW5kb2JqCjggMCBvYmoKPDwKL0NvbnRlbnRzIDE5IDAgUiAvTWVkaWFCb3ggWyAwIDAgNTk1LjI3NTYgODQxLjg4OTggXSAvUGFyZW50IDE0IDAgUiAvUmVzb3VyY2VzIDw8Ci9Gb250IDEgMCBSIC9Qcm9jU2V0IFsgL1BERiAvVGV4dCAvSW1hZ2VCIC9JbWFnZUMgL0ltYWdlSSBdCj4+IC9Sb3RhdGUgMCAvVHJhbnMgPDwKCj4+IAogIC9UeXBlIC9QYWdlCj4+CmVuZG9iago5IDAgb2JqCjw8Ci9Db250ZW50cyAyMCAwIFIgL01lZGlhQm94IFsgMCAwIDU5NS4yNzU2IDg0MS44ODk4IF0gL1BhcmVudCAxNCAwIFIgL1Jlc291cmNlcyA8PAovRm9udCAxIDAgUiAvUHJvY1NldCBbIC9QREYgL1RleHQgL0ltYWdlQiAvSW1hZ2VDIC9JbWFnZUkgXQo+PiAvUm90YXRlIDAgL1RyYW5zIDw8Cgo+PiAKICAvVHlwZSAvUGFnZQo+PgplbmRvYmoKMTAgMCBvYmoKPDwKL0NvbnRlbnRzIDIxIDAgUiAvTWVkaWFCb3ggWyAwIDAgNTk1LjI3NTYgODQxLjg4OTggXSAvUGFyZW50IDE0IDAgUiAvUmVzb3VyY2VzIDw8Ci9Gb250IDEgMCBSIC9Qcm9jU2V0IFsgL1BERiAvVGV4dCAvSW1hZ2VCIC9JbWFnZUMgL0ltYWdlSSBdCj4+IC9Sb3RhdGUgMCAvVHJhbnMgPDwKCj4+IAogIC9UeXBlIC9QYWdlCj4+CmVuZG9iagoxMSAwIG9iago8PAovQ29udGVudHMgMjIgMCBSIC9NZWRpYUJveCBbIDAgMCA1OTUuMjc1NiA4NDEuODg5OCBdIC9QYXJlbnQgMTQgMCBSIC9SZXNvdXJjZXMgPDwKL0ZvbnQgMSAwIFIgL1Byb2NTZXQgWyAvUERGIC9UZXh0IC9JbWFnZUIgL0ltYWdlQyAvSW1hZ2VJIF0KPj4gL1JvdGF0ZSAwIC9UcmFucyA8PAoKPj4gCiAgL1R5cGUgL1BhZ2UKPj4KZW5kb2JqCjEyIDAgb2JqCjw8Ci9QYWdlTW9kZSAvVXNlTm9uZSAvUGFnZXMgMTQgMCBSIC9UeXBlIC9DYXRhbG9nCj4+CmVuZG9iagoxMyAwIG9iago8PAovQXV0aG9yIChhbm9ueW1vdXMpIC9DcmVhdGlvbkRhdGUgKEQ6MjAwMDAxMDEwMDAwMDArMDAnMDAnKSAvQ3JlYXRvciAoYW5vbnltb3VzKSAvS2V5d29yZHMgKCkgL01vZERhdGUgKEQ6MjAwMDAxMDEwMDAwMDArMDAnMDAnKSAvUHJvZHVjZXIgKFJlcG9ydExhYiBQREYgTGlicmFyeSAtIFwob3BlbnNvdXJjZVwpKSAKICAvU3ViamVjdCAodW5zcGVjaWZpZWQpIC9UaXRsZSAoQ29udHJhdG8gZmljdGljaW8gLSBvcmlnaW5hbCkgL1RyYXBwZWQgL0ZhbHNlCj4+CmVuZG9iagoxNCAwIG9iago8PAovQ291bnQgOCAvS2lkcyBbIDQgMCBSIDUgMCBSIDYgMCBSIDcgMCBSIDggMCBSIDkgMCBSIDEwIDAgUiAxMSAwIFIgXSAvVHlwZSAvUGFnZXMKPj4KZW5kb2JqCjE1IDAgb2JqCjw8Ci9GaWx0ZXIgWyAvQVNDSUk4NURlY29kZSAvRmxhdGVEZWNvZGUgXSAvTGVuZ3RoIDY4Mgo+PgpzdHJlYW0KR2FzMVw/I1EydCY6RGctZloxRXVjNWFoR2lRXFc1YV0wIUVKYF9CM19kODg1Nk8wRSVlSzxcXl9iKFMiWiZCLE5CNGJhZ3BFVzApT2w8ZSEhNE9zXl4uT0pBaj5HIkgsYG1NMkQxMzVoKSEnLSpZblplWlwzKlw4OTNCdDtPREZXdWhWW0xXWCpiR0kvUypWVlZxbFsuY2VvPGVuK1BAUSdbTnRYODpIPGsiU25CI0cjamtvRlhsREZnJWNUPiljRVA3LjtYLm08LzdcQC5HWmx0MTloSl1pOVtkSlEkIk5kYXVyWnBbWSdSZmo3Wl4pZkFuW25qQU5lLTMydGMzaTVwPyxwQzEoL1xlZC06WWNXJl1KbVkxNVhWZkxDT3JfJHNyWzBjIlouKy5dVkEnRWpsJmhtUTRaNGJlYT5QJE9MbltHVVNNZEU2Y1dGXTEla1xcKkolPEBiYlFJSSRAcWJAVW5DLUJKQ1JJWGcmVU5tZEBndGMsYiUiZ1xSXyFRcypaaF5BOEdMUz9NKyMsbSpMJXVaZGtlJT4rSGREUFxBSlw2LCk+P2RXTFYkaD9sdWAjKDFWLG0hcSw8QD9bPEgzJEpeRFtuQFxmV04xZiZkXXNGS3MlTUNhKWE3Z2VvZT5VXzpWYi9HO1pKR1JHMmxRKklvam1GZj5lbydeUl05MWI2UFdYOSY4NzJxYCZEPVVGXGlSLU8sP1ZKU0s/c2hacygjdU4tSD1JTTdPaDIwI1RgNWlzW0lBSGxGJkoncFc5WUhVbCVfZCRKMEg3MF9SbmpCLUNyIidiPlNnSGNeMz0yYExCcnQhT1AzKEsqNV4zYmxQWlFRcmRqZTBOQGVsOz8sQmBYWGBBJlFvbFlJLVhZPEtHOV8lLmpGcCprOyVTXVwjJ1Z+PmVuZHN0cmVhbQplbmRvYmoKMTYgMCBvYmoKPDwKL0ZpbHRlciBbIC9BU0NJSTg1RGVjb2RlIC9GbGF0ZURlY29kZSBdIC9MZW5ndGggMjY2Cj4+CnN0cmVhbQpHYXJXMV8rTVUxJjtLWSVNWjlWPFhJWDQuZVFcTVwrPFtlSjRhOCFWPklvdS5fQnAiRkhUKzZ0SmRhRkRoW0pDPD1KVlsqXGQkZWpnX0J0P1lVPDhFMT4kNFY0LkVfYVhbZk5jaD5fTmw8Yix1LjQ+KCJcZ2hjXUhvb1JQR15mMnM2MDhoVUNqUTBmZ1dhIiwiZl9MUmFBXlFhTTw7TSlXbEhyYDtHQHAlZEU6KC9YKl8wUzRwW0tLPCtTXlZScCxLNFduJ19UVkY6bmhecm9STDM9MCJwKSc2ZS88M3NcVHQlQVExXlAkNjRQQTk6XSozMjEjVEk+bHM3b1o+XVtiZT0ncGkpRzR+PmVuZHN0cmVhbQplbmRvYmoKMTcgMCBvYmoKPDwKL0ZpbHRlciBbIC9BU0NJSTg1RGVjb2RlIC9GbGF0ZURlY29kZSBdIC9MZW5ndGggMjY2Cj4+CnN0cmVhbQpHYXJXcTsrbmVcJ0YhRmhySkwzRjUvYzlZZSo1VzxWLDM3SkJISGtuYnFiVTRwNk4mbXJkMyo8M15IKSEzOzt0YV9FOGotP0lvL3JNdS8paylZTzxWPCFONCRAcVNgQzYpdWBsVWBPdStxQmlLXypoVlQhJTtzYFlGNGBpaUNMRi9EUEYiXytZT2NlTDFZIilEIm5xQik5TzBKdC9YNjdsOVFyPU9pNkk7IzFVcVZgM2ZnJj5kSk5cTj5TKTsiOFVER2xYbWFeRV1sWGtsWVEiNiRcXWEqUURUMDpKXilbP1NpLl9oP1cyKDJOKiNXJUgyaWFnU0ItLz9XK2A2ZVhNOmlcYT1CJ2t+PmVuZHN0cmVhbQplbmRvYmoKMTggMCBvYmoKPDwKL0ZpbHRlciBbIC9BU0NJSTg1RGVjb2RlIC9GbGF0ZURlY29kZSBdIC9MZW5ndGggMjY2Cj4+CnN0cmVhbQpHYXJXcTsvPSQmJ0YhRT1KJlFdZ3A1alE4aC9tUj07XmRHM1JLbTMnMGstc0cvU1Ivcl5HZGBTRiJmcEkzOzt0YV9ERTtQP1ghVkpLQkphaSQtWDlPV1lCJVFEJ2liYUovMU1ET0YkYElsJ2szW0dbNCdRQy04U0BxUVMhSylcJCllbGBBMGNDbT5iNFNMdSFtWHRXWDlCJ2M3c0NTbTlwYyQwSUxwXClIcGhuWU49YF1CVnBMIUdCSkRuWSc6PGdxTSxELVJsSWtiT0tqNDgkKU9jQ045T0ZzSF5VRyJqVkxIZVQnXTY3SjFtamhQUF4qJydbJD5bLlA+cW1hY0ItNzFaa2NyPll+PmVuZHN0cmVhbQplbmRvYmoKMTkgMCBvYmoKPDwKL0ZpbHRlciBbIC9BU0NJSTg1RGVjb2RlIC9GbGF0ZURlY29kZSBdIC9MZW5ndGggMjY2Cj4+CnN0cmVhbQpHYXJXcTsrbmVcJ0YhRmhySkw0MXAoMkZgWDQrUTJWLC8idWNvaClMYnFiVTRwNk4nIXI6YGpCa1FEMXVpUztWIyNnN0krSD5OYnMpVmMsMzhtbVtQPDJEOVFCSlouSyJMSyo9S1tmJSM6PlxJTl9VSiloVlNWKTdWci41PlotZ3FLUydLM09iaCUtTmhzImtjRiwhaXFSJ0RSSFhwOjZpRG9PbC1Lc3JGIXAmX0JLXCg5TnJDQGotK0hLdGBBWWdPVDREc1I2WjY4K21fXzVZMXQyZj1wVWxwZz88RVU9bC5IOTcoOTY3JyU0ajFzbDFIdU0/cTM0VFUxblNzYjI6IUJiXTg1dDx+PmVuZHN0cmVhbQplbmRvYmoKMjAgMCBvYmoKPDwKL0ZpbHRlciBbIC9BU0NJSTg1RGVjb2RlIC9GbGF0ZURlY29kZSBdIC9MZW5ndGggMjY3Cj4+CnN0cmVhbQpHYXJXcTsrbmVcJ0YhRmhySkwzRkhcZjo+NC9bIyc5OypKdGNvZ1tmUlVuJXVwNk4nKXEhVXE4a1FEMXVpUztWIyNgRXFASD5OYnMoZCZLODhta0RlPDJEOlBjdDUydCQidUthJCl1SG46PlxJTmBvR01MVlNWKSNWW24sYmZQOVg4OiQ2KGJrKnMkPW1yV1tfbylVWkkwazIibz50XklcRG9PbC1Lc3ReN2w1PGkyRFFVaChlYF47S0hLdGEsWWdPVDVEc1I2WjY4K21fXzVZMXQyZj1wVWxyTkpMRVU9bC5HcnB0ODY3JyU0ajFzbDFdUTY/XzM0ZmEzblNzYjI6IUM8T0ZNTGszfj5lbmRzdHJlYW0KZW5kb2JqCjIxIDAgb2JqCjw8Ci9GaWx0ZXIgWyAvQVNDSUk4NURlY29kZSAvRmxhdGVEZWNvZGUgXSAvTGVuZ3RoIDI2Nwo+PgpzdHJlYW0KR2FyV3FjImItTSYtVXA8U21tXk8lU0c7cEliSiNrYUMkRGZfKWg1Ijw+OzA4SF1AQStxWSQxS0JpP0VINkhoKD4mPTJrNXB0P1gyMkhdI0M4bW9yOzwyRDklY3Q1JnEkInVFXSQqIVQ5Oj5cSU5gVEQuSDtlKkMja2RNZWZmUEJeQTxHK2EsQUBucCYqY3NEcFxcY1I/YmgsP29mN1FdcDJyYnEmZ3ROM0hvKXUzSTJxSHNLLldkOmpHaj5PKllnVCVyRHJcRGc2NzhtZ2hQbjg8R09CMydaP3JqY2csNlMlbHRucmUkRGdeUlEzM2xrbyQuN05qNU5EYGc7Y3ElMl9rKzBGdVdIWX4+ZW5kc3RyZWFtCmVuZG9iagoyMiAwIG9iago8PAovRmlsdGVyIFsgL0FTQ0lJODVEZWNvZGUgL0ZsYXRlRGVjb2RlIF0gL0xlbmd0aCAyNjcKPj4Kc3RyZWFtCkdhcldxOytuZVwnRiFGaHJKTDNGSFxmOj5rO3FMNFFVM3RyVG0+O1Y/J19gZGdLVylVcSFVcThrUUQxdWlTO1YjI2BFcUBIPk5hSClhImY7OG1qOUU8MkQ5JWN0NTJ0I3EtYmFLW2YlIzo+XEkuQEQsZ1oxcTs8LnAkbVBpRnJJcjxlVGs7XnEpMGw6SFg1SUZdWVZnQWJoLD9fZjI8cHBTKzJNTmlVKW5tNGI3Q2xYYFpWOClTSE0jaEttIWNYTC4wXGdVXVMvY3E+YHBFOV9CIU5PckBnbHFabm9qNFplPG5UR2BNS2g/KUdhKztWQTNINz0vXEBONl1uU3NiMjohQzxPR0hiJip+PmVuZHN0cmVhbQplbmRvYmoKeHJlZgowIDIzCjAwMDAwMDAwMDAgNjU1MzUgZiAKMDAwMDAwMDA2MSAwMDAwMCBuIAowMDAwMDAwMTAyIDAwMDAwIG4gCjAwMDAwMDAyMDkgMDAwMDAgbiAKMDAwMDAwMDMyMSAwMDAwMCBuIAowMDAwMDAwNTI2IDAwMDAwIG4gCjAwMDAwMDA3MzEgMDAwMDAgbiAKMDAwMDAwMDkzNiAwMDAwMCBuIAowMDAwMDAxMTQxIDAwMDAwIG4gCjAwMDAwMDEzNDYgMDAwMDAgbiAKMDAwMDAwMTU1MSAwMDAwMCBuIAowMDAwMDAxNzU3IDAwMDAwIG4gCjAwMDAwMDE5NjMgMDAwMDAgbiAKMDAwMDAwMjAzMyAwMDAwMCBuIAowMDAwMDAyMzE1IDAwMDAwIG4gCjAwMDAwMDI0MTkgMDAwMDAgbiAKMDAwMDAwMzE5MiAwMDAwMCBuIAowMDAwMDAzNTQ5IDAwMDAwIG4gCjAwMDAwMDM5MDYgMDAwMDAgbiAKMDAwMDAwNDI2MyAwMDAwMCBuIAowMDAwMDA0NjIwIDAwMDAwIG4gCjAwMDAwMDQ5NzggMDAwMDAgbiAKMDAwMDAwNTMzNiAwMDAwMCBuIAp0cmFpbGVyCjw8Ci9JRCAKWzxkOWNmM2Q3MDdkMmIwZTQ4ZGUzZTdiOWRlYjk4Mjg3ZD48ZDljZjNkNzA3ZDJiMGU0OGRlM2U3YjlkZWI5ODI4N2Q+XQolIFJlcG9ydExhYiBnZW5lcmF0ZWQgUERGIGRvY3VtZW50IC0tIGRpZ2VzdCAob3BlbnNvdXJjZSkKCi9JbmZvIDEzIDAgUgovUm9vdCAxMiAwIFIKL1NpemUgMjMKPj4Kc3RhcnR4cmVmCjU2OTQKJSVFT0YK", "received": "JVBERi0xLjMKJZOMi54gUmVwb3J0TGFiIEdlbmVyYXRlZCBQREYgZG9jdW1lbnQgKG9wZW5zb3VyY2UpCjEgMCBvYmoKPDwKL0YxIDIgMCBSIC9GMiAzIDAgUgo+PgplbmRvYmoKMiAwIG9iago8PAovQmFzZUZvbnQgL0hlbHZldGljYSAvRW5jb2RpbmcgL1dpbkFuc2lFbmNvZGluZyAvTmFtZSAvRjEgL1N1YnR5cGUgL1R5cGUxIC9UeXBlIC9Gb250Cj4+CmVuZG9iagozIDAgb2JqCjw8Ci9CYXNlRm9udCAvSGVsdmV0aWNhLUJvbGQgL0VuY29kaW5nIC9XaW5BbnNpRW5jb2RpbmcgL05hbWUgL0YyIC9TdWJ0eXBlIC9UeXBlMSAvVHlwZSAvRm9udAo+PgplbmRvYmoKNCAwIG9iago8PAovQ29udGVudHMgMTUgMCBSIC9NZWRpYUJveCBbIDAgMCA1OTUuMjc1NiA4NDEuODg5OCBdIC9QYXJlbnQgMTQgMCBSIC9SZXNvdXJjZXMgPDwKL0ZvbnQgMSAwIFIgL1Byb2NTZXQgWyAvUERGIC9UZXh0IC9JbWFnZUIgL0ltYWdlQyAvSW1hZ2VJIF0KPj4gL1JvdGF0ZSAwIC9UcmFucyA8PAoKPj4gCiAgL1R5cGUgL1BhZ2UKPj4KZW5kb2JqCjUgMCBvYmoKPDwKL0NvbnRlbnRzIDE2IDAgUiAvTWVkaWFCb3ggWyAwIDAgNTk1LjI3NTYgODQxLjg4OTggXSAvUGFyZW50IDE0IDAgUiAvUmVzb3VyY2VzIDw8Ci9Gb250IDEgMCBSIC9Qcm9jU2V0IFsgL1BERiAvVGV4dCAvSW1hZ2VCIC9JbWFnZUMgL0ltYWdlSSBdCj4+IC9Sb3RhdGUgMCAvVHJhbnMgPDwKCj4+IAogIC9UeXBlIC9QYWdlCj4+CmVuZG9iago2IDAgb2JqCjw8Ci9Db250ZW50cyAxNyAwIFIgL01lZGlhQm94IFsgMCAwIDU5NS4yNzU2IDg0MS44ODk4IF0gL1BhcmVudCAxNCAwIFIgL1Jlc291cmNlcyA8PAovRm9udCAxIDAgUiAvUHJvY1NldCBbIC9QREYgL1RleHQgL0ltYWdlQiAvSW1hZ2VDIC9JbWFnZUkgXQo+PiAvUm90YXRlIDAgL1RyYW5zIDw8Cgo+PiAKICAvVHlwZSAvUGFnZQo+PgplbmRvYmoKNyAwIG9iago8PAovQ29udGVudHMgMTggMCBSIC9NZWRpYUJveCBbIDAgMCA1OTUuMjc1NiA4NDEuODg5OCBdIC9QYXJlbnQgMTQgMCBSIC9SZXNvdXJjZXMgPDwKL0ZvbnQgMSAwIFIgL1Byb2NTZXQgWyAvUERGIC9UZXh0IC9JbWFnZUIgL0ltYWdlQyAvSW1hZ2VJIF0KPj4gL1JvdGF0ZSAwIC9UcmFucyA8PAoKPj4gCiAgL1R5cGUgL1BhZ2UKPj4KZW5kb2JqCjggMCBvYmoKPDwKL0NvbnRlbnRzIDE5IDAgUiAvTWVkaWFCb3ggWyAwIDAgNTk1LjI3NTYgODQxLjg4OTggXSAvUGFyZW50IDE0IDAgUiAvUmVzb3VyY2VzIDw8Ci9Gb250IDEgMCBSIC9Qcm9jU2V0IFsgL1BERiAvVGV4dCAvSW1hZ2VCIC9JbWFnZUMgL0ltYWdlSSBdCj4+IC9Sb3RhdGUgMCAvVHJhbnMgPDwKCj4+IAogIC9UeXBlIC9QYWdlCj4+CmVuZG9iago5IDAgb2JqCjw8Ci9Db250ZW50cyAyMCAwIFIgL01lZGlhQm94IFsgMCAwIDU5NS4yNzU2IDg0MS44ODk4IF0gL1BhcmVudCAxNCAwIFIgL1Jlc291cmNlcyA8PAovRm9udCAxIDAgUiAvUHJvY1NldCBbIC9QREYgL1RleHQgL0ltYWdlQiAvSW1hZ2VDIC9JbWFnZUkgXQo+PiAvUm90YXRlIDAgL1RyYW5zIDw8Cgo+PiAKICAvVHlwZSAvUGFnZQo+PgplbmRvYmoKMTAgMCBvYmoKPDwKL0NvbnRlbnRzIDIxIDAgUiAvTWVkaWFCb3ggWyAwIDAgNTk1LjI3NTYgODQxLjg4OTggXSAvUGFyZW50IDE0IDAgUiAvUmVzb3VyY2VzIDw8Ci9Gb250IDEgMCBSIC9Qcm9jU2V0IFsgL1BERiAvVGV4dCAvSW1hZ2VCIC9JbWFnZUMgL0ltYWdlSSBdCj4+IC9Sb3RhdGUgMCAvVHJhbnMgPDwKCj4+IAogIC9UeXBlIC9QYWdlCj4+CmVuZG9iagoxMSAwIG9iago8PAovQ29udGVudHMgMjIgMCBSIC9NZWRpYUJveCBbIDAgMCA1OTUuMjc1NiA4NDEuODg5OCBdIC9QYXJlbnQgMTQgMCBSIC9SZXNvdXJjZXMgPDwKL0ZvbnQgMSAwIFIgL1Byb2NTZXQgWyAvUERGIC9UZXh0IC9JbWFnZUIgL0ltYWdlQyAvSW1hZ2VJIF0KPj4gL1JvdGF0ZSAwIC9UcmFucyA8PAoKPj4gCiAgL1R5cGUgL1BhZ2UKPj4KZW5kb2JqCjEyIDAgb2JqCjw8Ci9QYWdlTW9kZSAvVXNlTm9uZSAvUGFnZXMgMTQgMCBSIC9UeXBlIC9DYXRhbG9nCj4+CmVuZG9iagoxMyAwIG9iago8PAovQXV0aG9yIChhbm9ueW1vdXMpIC9DcmVhdGlvbkRhdGUgKEQ6MjAwMDAxMDEwMDAwMDArMDAnMDAnKSAvQ3JlYXRvciAoYW5vbnltb3VzKSAvS2V5d29yZHMgKCkgL01vZERhdGUgKEQ6MjAwMDAxMDEwMDAwMDArMDAnMDAnKSAvUHJvZHVjZXIgKFJlcG9ydExhYiBQREYgTGlicmFyeSAtIFwob3BlbnNvdXJjZVwpKSAKICAvU3ViamVjdCAodW5zcGVjaWZpZWQpIC9UaXRsZSAoQ29udHJhdG8gZmljdGljaW8gLSByZWNpYmlkbykgL1RyYXBwZWQgL0ZhbHNlCj4+CmVuZG9iagoxNCAwIG9iago8PAovQ291bnQgOCAvS2lkcyBbIDQgMCBSIDUgMCBSIDYgMCBSIDcgMCBSIDggMCBSIDkgMCBSIDEwIDAgUiAxMSAwIFIgXSAvVHlwZSAvUGFnZXMKPj4KZW5kb2JqCjE1IDAgb2JqCjw8Ci9GaWx0ZXIgWyAvQVNDSUk4NURlY29kZSAvRmxhdGVEZWNvZGUgXSAvTGVuZ3RoIDcxNAo+PgpzdHJlYW0KR2FzMkc/I1EyZCdTYylSLydkNjdXPUM5OVVZTjdLMkokJ10uXjdkJV5uR24pRC5IPjs6JkZIQjJHcHJfRCVyL2tmQzU9KUhycl9QKnVUUFklPCw3X2pLZXVXNko2bjU2akRhM2ZUWzFMOkktVWNTazphO1gzMi8jPkpmQUxKUHNDQGVhQlRxP15FaVZEa1BiTCsxQTY7WSg1RUJdXFFrajhOT1VbJyk8LV5CLi0hWGNvSitiOzVZVWRTJV9FPEk4Ojs0MTZrMikjb19uXmpzLklpSV5zZmJyWU5FLkJXdEtJNFFXZnBTWUk2N28xWmAyL0pSMkpecUknRVU+ITB1JD9BWDouR01iL29YT2lgPlw0UiMibWNgRmpEPkEtbVpIQmNfLnJ1TyRPYl1sazZaVGg3XmNjaiVbUUlrZWJDNk1rbCI/TGpdTF9HXmZITDlEYHROaEhuWCVuJzlPUHNKNlFmZipmR106KydeVzgrI3VeNmspaGRmMTo2ZyxxV1tMM0YuIkNQLmgoOV1lbG1gXVdpJkI4WG5rdFI1b3NPLCNwST5RQWNhJSdAcixcKVUvREFVU0ZGS2JaQEY9YGlXWDBLLVNnXDhxcGE7LkQhYktDYiprZk0mX3NCKWxeVmhiUy0+NzlzLiZjUzguSj9KWCVbI0tJVVwnXlgzJCc+PVM3JnNxT2smVlBLNTlvKW5sbVFGYD1AYTxBZGgwNCo7QUtbTipUKD1yREZbVks5XEApVkBxaWdeSV5xXi9kP0FCN2U0MGVPb3BpSWY9UywsJDFWSGBdTjdEa206Vk1FWDRYTFgzaUdAKyFxdFAzKytHZSZSMjFjP2xdSDVYVFxnXiM+UC90aThIKGpgS1FbRmpkUlc7Mk4qbVBbTWo2LWcuIygrSi0/WFE6SmhwdUUxbWcrNkhXKmIqNi5PSllGJzshIzdrJy8+bH4+ZW5kc3RyZWFtCmVuZG9iagoxNiAwIG9iago8PAovRmlsdGVyIFsgL0FTQ0lJODVEZWNvZGUgL0ZsYXRlRGVjb2RlIF0gL0xlbmd0aCAzMDEKPj4Kc3RyZWFtCkdhcnAlOytuZVwnRiFGaHJKTDNGX0owYEcydG81QjwhcT86YyVFNE8vN2pyJS47OU9wcEVpPU5KZUUpMUxXYW5ZT0c6WzhXSSFLJ2lqKXMiKjNvYWtPcHBuJjY4JURqSzVHKUM9YFhKKVpTKk5XQCIiNSpwLExmLGlqZlFIPzlnPy4rdG5qMGhyU0VUTTw1ZksoJVVBPSRzZF07XGs7YlRrKmpXWVBBW2VbPFovYj9VR11jYEQoJ1ktUVZEYSwvXm9zX1ZHRSVmLD5mOyMsaypDYTtlMi4nOmtxcEZHR0MsNyNGKVFNcHA+QCsqTVhSRFQ2MFktXTM8SkdoUG10amdXPi5WV0A3bFQpVjZ0WGo5XkhfMEJDTG1OblNqRjoiWjc/JzhvWlNkcS47fj5lbmRzdHJlYW0KZW5kb2JqCjE3IDAgb2JqCjw8Ci9GaWx0ZXIgWyAvQVNDSUk4NURlY29kZSAvRmxhdGVEZWNvZGUgXSAvTGVuZ3RoIDMwMgo+PgpzdHJlYW0KR2FycCU/VkE5aidGIiIjST5bV3BfSjU5V21hJ1lTO0NROUBDYFt1O2I+SyppUyEkZ2dEZjhOQS1SXi4pRTRHZ0AoaC8hSTFmWHE9OUFGK2ZOJ2wwKDhYKUooNkhJaUVGMEtmLjNLKjxTRXFWcElDVEtFS0E7ZEtvK15SY1tsaWZlIiY4QGB0a3E6Nig2PClRdVlFMV4jVlhJdG1mLTk0KFJrJFtqY2FxXCZHS0xJbClSWFE6RDEwNiEzTnIiL0BOTlNWMmduOW0paTJfOjFMW05sMjJYR2s0aypsZG1iSzokbkghNDU7ZzxKMyNUXFFiWFcpRVRZSWUlN20sImJPPGQxPjNeSlxQQSwjbCJVa2ZGRV9COTItIyZDL3VpQzVxLEg5LCJYLW47Xyk6fj5lbmRzdHJlYW0KZW5kb2JqCjE4IDAgb2JqCjw8Ci9GaWx0ZXIgWyAvQVNDSUk4NURlY29kZSAvRmxhdGVEZWNvZGUgXSAvTGVuZ3RoIDMwMgo+PgpzdHJlYW0KR2FycCU/VkE5aidGIiIjST5bV3BfSjdQQm1hJ1lTO0NROUBDYFt1O2I+SyppUlpeXmZEZjZPXi1SXi4pRTRHZ0AoaC50c1IqbCEvIWsxL2w5LT4uVzFlSm80XzhSdGQkLnNSSCcsS0YmalFxZHFmMnVtISNfVDBgYV42TUtZaWpzO0pTLkRYQUBucUE4bVlqbF1MKEQkUyVhZjdZIW5UUUQ2QiUwNS0lLjVlT2BJcC41XWByZ0E2RSFDMGhcZWpaSlJWRHUsWGRHOVYmWmNcLUJKQyplIiNIKVNdVGdxL20raVdJVlBWczJtNkBIblxHRHIlQGRKKTAzQVleN25YTjlXbXVJak4sQUxldWpXVSppSXBTTlctJzkvbkhiYUNyPVtRUjY9Om5rIUVOfj5lbmRzdHJlYW0KZW5kb2JqCjE5IDAgb2JqCjw8Ci9GaWx0ZXIgWyAvQVNDSUk4NURlY29kZSAvRmxhdGVEZWNvZGUgXSAvTGVuZ3RoIDMwMgo+PgpzdHJlYW0KR2FycCU7K25lXCdGIUZockpMM0ZfST9HSjJ0bzVCPCFxPzpjJUU0Ty83anIlLjs5T3BwU0xDN0tMczYyKiVwK1Q3aGNIKlZzOGVaTTxnW2FhLGdhVF9AanBbI2U/Pm8oam5MLjBrW3U5U0dzL0IpUVVJVVpHWFlpJ1gmNWFsaV1gVC9AJEhRWj5FV0FWNVEkamhdXTFQYy1YR21YckEuSzJjb05jXj9BJTVEM1o6MjImYkw6ZzRZJ1VDMDs+YGpZRF9nP2kjdW1HOVYoJiVZU3ArQyknbUoiNFVmLHJtTjpVbi0ucT9JWDUwXDlIQWNPU0tCYGRmMWpfXmgpWS9VQmZpb3EubEMnJTZnXCc0U2lpX0BtWXM+NF9FaU5FU0koZC1DMT9dQm9FOGFifj5lbmRzdHJlYW0KZW5kb2JqCjIwIDAgb2JqCjw8Ci9GaWx0ZXIgWyAvQVNDSUk4NURlY29kZSAvRmxhdGVEZWNvZGUgXSAvTGVuZ3RoIDMwMgo+PgpzdHJlYW0KR2FycCU7K25lXCdGIUZockpMM0ZfST9IdUQ9MjdhVz4pXVsyQG1OLlpdbW80VlBJNV1oalhodCN0aThiKiVwK1Q4KXQwaztnI21IYC0nQUFBJm5qOkAwdHVzS05zMG0jMmRYTWJoOzgvaz9nV19fPjYnQWx1OTNbYEgtX0lITj90YzZyckE7W2BhUS4nX05kNS8qLDZpbCs7MyhcbWItZGp1TyI3UEFbYlZdZVk4OTdVb1tuPkA2bCUvYU1FMT5YZj4qOXFOKnVjOXVSIk02UF1jPiItLVEqYm1FRXBNUTUjcGpmW0tFSVJWLVMzJzIlPT5zc2ZZRkREP2gtOVInbCRmcjs9KSswKUw+JydPIiQrNlZsakdoXEtUZ1M+M29gMGBnci8xY290UCkhfj5lbmRzdHJlYW0KZW5kb2JqCjIxIDAgb2JqCjw8Ci9GaWx0ZXIgWyAvQVNDSUk4NURlY29kZSAvRmxhdGVEZWNvZGUgXSAvTGVuZ3RoIDMwMgo+PgpzdHJlYW0KR2FycCU7K25lXCdGIUZockpMM0ZfST9IVUZtYSppVz4pXVsyQG1OLlpdbW80VlBJNV1oalhodCN0aThiKiVwK1Q4KXQwaztnI21IYC0nQUFBJm5qOkAwdHVzS05zMG0jMmRYTWJoO2g/az9nV182JGFKOUcuPzFpaWpsb0VITj90YzZyckE7W2BhUS4nX05kNS8qLDZpbCs7MyhcbWItZEFmOnBHOE41QWY/NV5VV1VHOHBIWFk0cSNRP0AxUy91KzcmVlUjUXVCLUs7IjZxRmVbPGAtJy1MS11Zal1jMU42NStsX0FTPWRKOWtEbXEiZWtNVjNsYE85PmgtOVInbCRmcjs9KSswKUw+JydPIiQrNlZsakdoXEtUZ1M+M29gMGBnci8xY3BOZ0U1fj5lbmRzdHJlYW0KZW5kb2JqCjIyIDAgb2JqCjw8Ci9GaWx0ZXIgWyAvQVNDSUk4NURlY29kZSAvRmxhdGVEZWNvZGUgXSAvTGVuZ3RoIDMwMgo+PgpzdHJlYW0KR2FycCU7K25lXCdGIUZockpMM0ZfST9HKj5QQyVmPCFxPzpjJUU0Ty83anIlLjs5T3BwU0xCJEplRSkxTFdhblkmVlwsaFdJIUsnaWouTSMwazpaYFlRWE08NkVaVjojMSlFb2szVnBsaz9nVz8raGBeVEhec0lRblFbPFg/OWc/Lit0bmowaHJTRVRNPDVmSyglVUE9JHNlOEZcbWszZUFmPD5iUEFbZVs8Wi9iP1VHXWNgRCgnWS1mMWdObFhlVV5QVkdFJWZCOy4qRjhCQTY0OjZBTzs1VE4+XWhpMEIkKyZMNihrLDZiaWdiSENWcSs3b0JoOUJQP3BKL0VwZy5qOXU4a2grV2QoJUEwK0FXaWVIUWVIMUU3RWBDRG8qaWxSVE90PnEpKWFJfj5lbmRzdHJlYW0KZW5kb2JqCnhyZWYKMCAyMwowMDAwMDAwMDAwIDY1NTM1IGYgCjAwMDAwMDAwNjEgMDAwMDAgbiAKMDAwMDAwMDEwMiAwMDAwMCBuIAowMDAwMDAwMjA5IDAwMDAwIG4gCjAwMDAwMDAzMjEgMDAwMDAgbiAKMDAwMDAwMDUyNiAwMDAwMCBuIAowMDAwMDAwNzMxIDAwMDAwIG4gCjAwMDAwMDA5MzYgMDAwMDAgbiAKMDAwMDAwMTE0MSAwMDAwMCBuIAowMDAwMDAxMzQ2IDAwMDAwIG4gCjAwMDAwMDE1NTEgMDAwMDAgbiAKMDAwMDAwMTc1NyAwMDAwMCBuIAowMDAwMDAxOTYzIDAwMDAwIG4gCjAwMDAwMDIwMzMgMDAwMDAgbiAKMDAwMDAwMjMxNSAwMDAwMCBuIAowMDAwMDAyNDE5IDAwMDAwIG4gCjAwMDAwMDMyMjQgMDAwMDAgbiAKMDAwMDAwMzYxNiAwMDAwMCBuIAowMDAwMDA0MDA5IDAwMDAwIG4gCjAwMDAwMDQ0MDIgMDAwMDAgbiAKMDAwMDAwNDc5NSAwMDAwMCBuIAowMDAwMDA1MTg4IDAwMDAwIG4gCjAwMDAwMDU1ODEgMDAwMDAgbiAKdHJhaWxlcgo8PAovSUQgCls8YWE5OTRlYzJkMzExZGU0MTMyODA1NjUzODU5NWU2NzY+PGFhOTk0ZWMyZDMxMWRlNDEzMjgwNTY1Mzg1OTVlNjc2Pl0KJSBSZXBvcnRMYWIgZ2VuZXJhdGVkIFBERiBkb2N1bWVudCAtLSBkaWdlc3QgKG9wZW5zb3VyY2UpCgovSW5mbyAxMyAwIFIKL1Jvb3QgMTIgMCBSCi9TaXplIDIzCj4+CnN0YXJ0eHJlZgo1OTc0CiUlRU9GCg=="};
 
 function notice(message='',error=false){$('alert').textContent=message;$('alert').hidden=!message;$('alert').classList.toggle('error',error);}
 let toastTimer;
@@ -671,7 +673,21 @@ for(const side of ['original','received']){
 }
 $('ignore-case').addEventListener('change',invalidate);
 
-function pageAt(side,offset){const doc=state.docs[side];if(!doc)return 'Texto pegado';let start=0;for(let i=0;i<doc.pages.length;i++){const length=normalize(doc.pages[i]).length;if(offset<start+length||i===doc.pages.length-1)return 'Original · pág. '.replace('Original',side==='original'?'Original':'Recibido')+(i+1);start+=length+1;}return '';}
+function pageRanges(doc){
+ const ranges=[];
+ let offset=0;
+ for(const [index,page] of (doc?.pages ?? []).entries()){
+  const length=normalize(page).length;
+  if(!length)continue;
+  ranges.push({number:index+1,start:offset,end:offset+length});
+  offset+=length+1;
+ }
+ return ranges;
+}
+function pagesForSpan(ranges,span){
+ if(!span)return [];
+ return ranges.filter(page=>span.start<page.end&&span.end>page.start).map(page=>page.number);
+}
 function excerptAt(text,start,end){
  const preceding=text.lastIndexOf('. ',Math.max(0,start-1));
  const following=text.indexOf('. ',end);
@@ -679,22 +695,96 @@ function excerptAt(text,start,end){
  left=Math.max(left,start-110);right=Math.min(right,end+110);
  return (left>0&&left!==preceding+2?'… ':'')+text.slice(left,right).trim()+(right<text.length&&right!==following+1?' …':'');
 }
+function tokenize(text,ignoreCase){
+ return Array.from(text.matchAll(/[\p{L}\p{M}\p{N}_]+|[^\s]/gu),match=>({
+  key:ignoreCase?match[0].toLowerCase():match[0],
+  start:match.index,
+  end:match.index+match[0].length
+ }));
+}
+function textSpan(text,tokens,start,end){
+ if(start===end)return null;
+ const first=tokens[start].start;
+ const last=tokens[end-1].end;
+ return {start:first,end:last,text:text.slice(first,last)};
+}
 function makeDifferences(original,received,ignoreCase=false){
- const tokens=original.split(/\s+/).length+received.split(/\s+/).length;if(tokens>80000)throw new Error('Hay demasiado texto para comparar de una vez. Dividí los documentos en secciones.');
- const parts=Diff.diffWords(original,received,{ignoreCase,timeout:6000,maxEditLength:6000});
+ const oldTokens=tokenize(original,ignoreCase);
+ const newTokens=tokenize(received,ignoreCase);
+ if(oldTokens.length+newTokens.length>120000)throw new Error('Hay demasiado texto para comparar de una vez. Dividí los documentos en secciones.');
+ const parts=Diff.diffArrays(oldTokens,newTokens,{
+  comparator:(left,right)=>left.key===right.key,
+  timeout:6000,
+  maxEditLength:6000
+ });
  if(!parts)throw new Error('Los documentos tienen demasiadas diferencias para una comparación rápida. Verificá que correspondan al mismo contrato o comparalos por secciones.');
- const differences=[];let oldPos=0,newPos=0;
+ const oldRanges=pageRanges(state.docs.original);
+ const newRanges=pageRanges(state.docs.received);
+ const differences=[];
+ let oldPos=0;
+ let newPos=0;
  for(let i=0;i<parts.length;i++){
   const part=parts[i];
-  if(!part.added&&!part.removed){oldPos+=part.value.length;newPos+=part.value.length;continue;}
-  const oldStart=oldPos,newStart=newPos;let removed='',added='';
-  while(i<parts.length&&(parts[i].added||parts[i].removed)){const p=parts[i];if(p.removed){removed+=p.value;oldPos+=p.value.length;}if(p.added){added+=p.value;newPos+=p.value.length;}i++;}i--;
-  const kind=removed.trim()?(added.trim()?'changed':'missing'):'added';
-  if(!removed.trim()&&!added.trim())continue;
-  const source=removed.trim()?original:received;const start=removed.trim()?oldStart:newStart;const length=removed.trim()?removed.length:added.length;
-  differences.push({id:differences.length,kind,removed:removed.trim(),added:added.trim(),oldExcerpt:excerptAt(original,oldStart,oldPos),newExcerpt:excerptAt(received,newStart,newPos),before:source.slice(Math.max(0,start-140),start).trim(),after:source.slice(start+length,start+length+140).trim(),oldPage:pageAt('original',oldStart),newPage:pageAt('received',newStart),selected:false,note:'',manual:false});
+  if(!part.added&&!part.removed){
+   oldPos+=part.count;
+   newPos+=part.count;
+   continue;
+  }
+  const oldStart=oldPos;
+  const newStart=newPos;
+  while(i<parts.length&&(parts[i].added||parts[i].removed)){
+   if(parts[i].removed)oldPos+=parts[i].count;
+   else newPos+=parts[i].count;
+   i++;
+  }
+  i--;
+  const removed=textSpan(original,oldTokens,oldStart,oldPos);
+  const added=textSpan(received,newTokens,newStart,newPos);
+  const kind=removed?(added?'changed':'missing'):'added';
+  const source=removed?original:received;
+  const span=removed ?? added;
+  differences.push({
+   kind,
+   removed:removed?.text ?? '',
+   added:added?.text ?? '',
+   oldExcerpt:removed?excerptAt(original,removed.start,removed.end):'',
+   newExcerpt:added?excerptAt(received,added.start,added.end):'',
+   before:source.slice(Math.max(0,span.start-140),span.start).trim(),
+   after:source.slice(span.end,span.end+140).trim(),
+   oldPages:pagesForSpan(oldRanges,removed),
+   newPages:pagesForSpan(newRanges,added)
+  });
  }
- return differences;
+ return groupDifferences(differences,ignoreCase);
+}
+function groupDifferences(differences,ignoreCase){
+ const groups=new Map();
+ const keyText=text=>{
+  const cleaned=normalize(text).replace(/(?<=\S)\s*([-‐‑–—])\s*(?=\S)/gu,'$1');
+  return ignoreCase?cleaned.toLowerCase():cleaned;
+ };
+ for(const difference of differences){
+  const {kind,removed,added,oldExcerpt,newExcerpt}=difference;
+  // Short edits can be identical in unrelated fields, so compare their context too.
+  const useContext=kind==='changed'||(removed||added).split(/\s+/).length<3;
+  const key=JSON.stringify([
+   kind,keyText(removed),keyText(added),
+   ...(useContext?[keyText(oldExcerpt),keyText(newExcerpt)]:[])
+  ]);
+  const group=groups.get(key);
+  if(group){
+   group.count++;
+   for(const page of difference.oldPages)group.oldPages.add(page);
+   for(const page of difference.newPages)group.newPages.add(page);
+  }else{
+   groups.set(key,{
+    ...difference,id:groups.size,count:1,selected:false,note:'',manual:false,
+    oldPages:new Set(difference.oldPages),
+    newPages:new Set(difference.newPages)
+   });
+  }
+ }
+ return [...groups.values()];
 }
 async function compare(){
  if(state.busy)return;
@@ -726,6 +816,26 @@ function defaultNote(d,language){
  if(language==='pt')return d.kind==='missing'?`Por favor, incluir o texto da versão original: ${old}.`:d.kind==='added'?`Por favor, confirmar o texto adicionado, que não consta no original: ${value}.`:`Por favor, revisar esta alteração: o original diz ${old}; a versão recebida diz ${value}.`;
  return d.kind==='missing'?`Por favor, restituir el texto de la versión original: ${old}.`:d.kind==='added'?`Por favor, confirmar el texto agregado, que no figura en el original: ${value}.`:`Por favor, revisar este cambio: el original indica ${old}; la versión recibida indica ${value}.`;
 }
+const locationLabels={
+ es:{original:'Original',received:'Recibido',page:'pág.',pages:'págs.',unpaged:'texto pegado, sin páginas',count:n=>`Aparece ${n} veces`},
+ en:{original:'Original',received:'Received',page:'p.',pages:'pp.',unpaged:'pasted text, no page numbers',count:n=>`Appears ${n} times`},
+ pt:{original:'Original',received:'Recebido',page:'pág.',pages:'págs.',unpaged:'texto colado, sem páginas',count:n=>`Aparece ${n} vezes`}
+};
+function describeLocation(side,pages,language='es'){
+ const labels=locationLabels[language];
+ const numbers=[...pages].sort((a,b)=>a-b);
+ const location=numbers.length
+  ? `${numbers.length===1?labels.page:labels.pages} ${numbers.join(', ')}`
+  : labels.unpaged;
+ return `${labels[side]} · ${location}`;
+}
+function draftLocations(difference,language){
+ const locations=[];
+ if(difference.removed)locations.push(describeLocation('original',difference.oldPages,language));
+ if(difference.added)locations.push(describeLocation('received',difference.newPages,language));
+ if(difference.count>1)locations.unshift(locationLabels[language].count(difference.count));
+ return locations.join(' | ');
+}
 function visibleDifferences(){return state.differences.filter(d=>state.filter==='all'||d.kind===state.filter);}
 function renderDifferences(){
  $('count-total').textContent=state.differences.length;
@@ -735,7 +845,33 @@ function renderDifferences(){
  for(const d of visible){
   if(!d.manual)d.note=defaultNote(d,$('language').value);
   const article=document.createElement('article');article.className='difference'+(d.selected?' selected':'');article.dataset.id=d.id;
-  article.innerHTML=`<div class="diff-top"><label><input type="checkbox" data-select="${d.id}" autocomplete="off" ${d.selected?'checked':''}>Observación ${String(d.id+1).padStart(2,'0')}</label><span class="type-tag ${d.kind}">${labelType[d.kind]}</span></div><div class="diff-context">${d.before?'… '+escapeHTML(clipText(d.before,140))+' ':''}<strong>${escapeHTML(clipText(d.removed||d.added,100))}</strong>${d.after?' '+escapeHTML(clipText(d.after,140))+' …':''}</div><div class="diff-columns"><div><div class="eyebrow">${escapeHTML(d.oldPage)}</div><p class="${d.removed?'old':'absent'}">${d.removed?escapeHTML(clipText(d.kind==='changed'?d.oldExcerpt:d.removed)):'Sin este texto en el original'}</p></div><div><div class="eyebrow">${escapeHTML(d.newPage)}</div><p class="${d.added?'new':'absent'}">${d.added?escapeHTML(clipText(d.kind==='changed'?d.newExcerpt:d.added)):'No aparece en el texto recibido'}</p></div></div><div class="observation"><label for="note-${d.id}">Observación para el correo · Podés editarla</label><textarea id="note-${d.id}" data-note="${d.id}" rows="2" autocomplete="off" spellcheck="false" autocorrect="off">${escapeHTML(d.note)}</textarea></div>`;
+  const originalLocation=d.removed?describeLocation('original',d.oldPages):'Original';
+  const receivedLocation=d.added?describeLocation('received',d.newPages):'Recibido';
+  article.innerHTML=`
+   <div class="diff-top">
+    <label><input type="checkbox" data-select="${d.id}" autocomplete="off" ${d.selected?'checked':''}>Observación ${String(d.id+1).padStart(2,'0')}</label>
+    <div class="diff-tags">
+     ${d.count>1?`<span class="repeat-tag">${locationLabels.es.count(d.count)}</span>`:''}
+     <span class="type-tag ${d.kind}">${labelType[d.kind]}</span>
+    </div>
+   </div>
+   <div class="diff-context">
+    ${d.before?'… '+escapeHTML(clipText(d.before,140))+' ':''}<strong>${escapeHTML(clipText(d.removed||d.added,100))}</strong>${d.after?' '+escapeHTML(clipText(d.after,140))+' …':''}
+   </div>
+   <div class="diff-columns">
+    <div>
+     <div class="diff-location">${escapeHTML(originalLocation)}</div>
+     <p class="${d.removed?'old':'absent'}">${d.removed?escapeHTML(clipText(d.kind==='changed'?d.oldExcerpt:d.removed)):'Sin este texto en el original'}</p>
+    </div>
+    <div>
+     <div class="diff-location">${escapeHTML(receivedLocation)}</div>
+     <p class="${d.added?'new':'absent'}">${d.added?escapeHTML(clipText(d.kind==='changed'?d.newExcerpt:d.added)):'No aparece en el texto recibido'}</p>
+    </div>
+   </div>
+   <div class="observation">
+    <label for="note-${d.id}">Observación para el correo · Podés editarla</label>
+    <textarea id="note-${d.id}" data-note="${d.id}" rows="2" autocomplete="off" spellcheck="false" autocorrect="off">${escapeHTML(d.note)}</textarea>
+   </div>`;
   list.append(article);
  }
  updateSelection();
@@ -755,7 +891,7 @@ function generateDraft(){
  const messages={es:{subject:`Revisión de contrato${reference?' – '+reference:''}: observaciones`,greeting:`Hola${name?' '+name:''},`,intro:`Revisamos la versión recibida${reference?' del contrato '+reference:''} y encontramos los siguientes puntos para revisar:`,closing:'¿Podrías revisar estas observaciones y enviarnos la versión corregida o las aclaraciones correspondientes?\n\nMuchas gracias.\nSaludos,'},en:{subject:`Contract review${reference?' – '+reference:''}: comments`,greeting:`Hi${name?' '+name:''},`,intro:`We reviewed the received version${reference?' of contract '+reference:''} and identified the following items for review:`,closing:'Could you please review these comments and send us a corrected version or the relevant clarifications?\n\nThank you.\nBest regards,'},pt:{subject:`Revisão do contrato${reference?' – '+reference:''}: observações`,greeting:`Olá${name?' '+name:''},`,intro:`Revisamos a versão recebida${reference?' do contrato '+reference:''} e identificamos os seguintes pontos para revisão:`,closing:'Você poderia revisar estas observações e nos enviar a versão corrigida ou os esclarecimentos correspondentes?\n\nMuito obrigado.\nAtenciosamente,'}};
  const message=messages[language];
  $('draft-to').value=$('seller-email').value.trim();$('draft-subject').value=message.subject;
- $('draft-body').value=[message.greeting,message.intro,selected.map((d,i)=>`${i+1}. ${d.note.trim()}\n   (${d.oldPage}; ${d.newPage})`).join('\n\n'),message.closing].join('\n\n');
+ $('draft-body').value=[message.greeting,message.intro,selected.map((d,i)=>`${i+1}. ${d.note.trim()}\n   (${draftLocations(d,language)})`).join('\n\n'),message.closing].join('\n\n');
  state.draftRevision=state.revision;$('draft-state').textContent='EDITABLE';$('draft-state').classList.remove('draft-stale');$('open-mail').disabled=false;
  $('draft-panel').hidden=false;markSteps(3);$('draft-panel').scrollIntoView({behavior:'smooth',block:'start'});notice();
 }
