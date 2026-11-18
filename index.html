@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-g/bQGN3C0H+2VSdJbQs3iUM/y+M5E+qqBok29ZjwTWQ=' 'sha256-w6ZVTxMWIMRjkUMvGE+1r2oWtto3F56Vfv4sQMJN8VE='; worker-src blob:; style-src 'unsafe-inline'; connect-src 'none'; form-action 'none'; base-uri 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-g/bQGN3C0H+2VSdJbQs3iUM/y+M5E+qqBok29ZjwTWQ=' 'sha256-i2JrBLw1Khi/OaZqPq/4gAfK/pp4OZWOn9Wr7W/k/vw='; worker-src blob:; style-src 'unsafe-inline'; connect-src 'none'; form-action 'none'; base-uri 'none'">
 <meta name="referrer" content="no-referrer">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="description" content="Compará el texto de dos contratos PDF, revisá los cambios y prepará un correo con las observaciones seleccionadas.">
@@ -19,6 +19,14 @@
 @media(max-width:600px){.intro{font-size:12px}.topbar{font-size:10px}.steps li{font-size:10px}.method-note{font-size:10px}.tabs button,.text-button{font-size:10px}.diff-columns p{font-size:12px}.diff-context{font-size:11px}.stats p{font-size:9px}.section-heading h2{font-size:14px}.subtle{font-size:9px}}
 
 .diff-tags{display:flex;align-items:center;justify-content:flex-end;flex-wrap:wrap;gap:6px;margin-left:auto}.diff-tags .type-tag{margin-left:0}.repeat-tag{background:#e9f0fa;color:#244d76;font-size:10px;font-weight:600;padding:3px 7px;border-radius:4px;white-space:nowrap}.diff-location{color:#4a6176;font-size:11px;font-weight:600;overflow-wrap:anywhere}.diff-top label{flex-shrink:0}
+
+.capture-trigger{margin-top:8px}.draft-actions>div{flex-wrap:wrap}
+#capture-dialog{max-width:min(860px,calc(100% - 24px));width:100%;max-height:90vh;border:1px solid #c6d2df;border-radius:12px;padding:20px;color:#243f54;background:#fff;overflow:auto}
+#capture-dialog::backdrop{background:#182c45a0}.capture-header{display:flex;align-items:center;justify-content:space-between;gap:12px}.capture-header h2{font-size:18px;margin:0}
+.capture-toolbar{display:flex;align-items:center;flex-wrap:wrap;gap:8px;margin-top:12px}.capture-toolbar select{width:auto}.capture-toolbar label,#capture-status{font-size:12px}
+#capture-canvas{display:block;width:100%;height:auto;border:1px solid #cfdae5}
+#capture-text{white-space:pre-wrap;overflow-wrap:anywhere;background:#f5f8fc;padding:12px;border-radius:6px}
+#capture-text mark{background:#ffe5a3;color:inherit}
 </style>
 </head>
 <body>
@@ -27,7 +35,7 @@
   <a class="brand" href="#" aria-label="Contract Desk, inicio"><span class="brand-mark">C<span></span></span><span>contract<span class="brand-light">desk</span><small>COMMERCIAL OPERATIONS</small></span></a>
   <div class="side-label">ESPACIO DE TRABAJO</div>
   <div class="side-active"><span class="icon">▤</span>Control de contratos<span class="nav-dot"></span></div>
-  <div class="side-note"><span class="lock-icon">◈</span><strong>Documentos en tu equipo</strong><p>Los PDF se procesan en el navegador. Al recargar o salir de la página, se borra la revisión.</p></div>
+  <div class="side-note"><span class="lock-icon">◈</span><strong>Documentos en tu equipo</strong><p>Los archivos se procesan en el navegador. Al recargar o salir de la página, se borra la revisión.</p></div>
   <div class="side-bottom"><span class="avatar">CD</span><span>Herramienta de revisión<small>Versión inicial · Comparación de texto</small></span></div>
  </aside>
  <main>
@@ -36,27 +44,37 @@
    <div class="heading-row"><div><div class="eyebrow"><span></span>CONTROL DE CONTRATOS</div><h1>Comparador de contratos</h1><p class="intro">Compará la versión original con la recibida y convertí las diferencias en una respuesta.</p></div><button class="btn secondary" id="demo">Probar con ejemplo <span>↗</span></button></div>
    <ol class="steps" aria-label="Etapas de la revisión"><li class="current" id="step-1"><span>1</span><div>Cargá los documentos<small>Original y versión recibida</small></div></li><li id="step-2"><span>2</span><div>Revisá las diferencias<small>Elegí qué corresponde reclamar</small></div></li><li id="step-3"><span>3</span><div>Prepará el correo<small>Revisá el borrador y abrilo</small></div></li></ol>
    <section class="section-panel" aria-labelledby="documents-title">
-    <div class="section-heading"><h2 id="documents-title"><span class="section-num">01</span>Documentos a comparar</h2><span class="subtle">PDF con texto seleccionable · Hasta 15 MB por archivo</span></div>
+    <div class="section-heading"><h2 id="documents-title"><span class="section-num">01</span>Documentos a comparar</h2><span class="subtle">PDF o Word (.docx) · Hasta 15 MB por archivo</span></div>
     <div class="document-grid">
-     <div class="document-card"><div class="document-label"><span class="doc-dot original"></span><h3>Contrato original</h3><span class="pill">REFERENCIA</span></div><p>La versión que preparó tu equipo.</p><label class="dropzone" id="drop-original" for="file-original"><span class="upload-icon">↑</span><strong>Elegí el PDF original</strong><span>o arrastralo hasta acá</span><input id="file-original" type="file" accept="application/pdf,.pdf"></label><div id="meta-original" class="file-meta" role="status"></div><details><summary>Ver o pegar texto</summary><label class="sr-only" for="text-original">Texto del contrato original</label><textarea id="text-original" autocomplete="off" autocorrect="off" placeholder="También podés pegar el texto del original para compararlo." spellcheck="false"></textarea></details></div>
-     <div class="document-card"><div class="document-label"><span class="doc-dot received"></span><h3>Contrato recibido</h3><span class="pill">A REVISAR</span></div><p>La versión que te devolvió el vendedor.</p><label class="dropzone" id="drop-received" for="file-received"><span class="upload-icon">↑</span><strong>Elegí el PDF recibido</strong><span>o arrastralo hasta acá</span><input id="file-received" type="file" accept="application/pdf,.pdf"></label><div id="meta-received" class="file-meta" role="status"></div><details><summary>Ver o pegar texto</summary><label class="sr-only" for="text-received">Texto del contrato recibido</label><textarea id="text-received" autocomplete="off" autocorrect="off" placeholder="Pegá acá el texto de la versión recibida." spellcheck="false"></textarea></details></div>
+     <div class="document-card"><div class="document-label"><span class="doc-dot original"></span><h3>Contrato original</h3><span class="pill">REFERENCIA</span></div><p>La versión que preparó tu equipo.</p><label class="dropzone" id="drop-original" for="file-original"><span class="upload-icon">↑</span><strong>Elegí el archivo original</strong><span>o arrastralo hasta acá</span><input id="file-original" type="file" accept=".pdf,.docx,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document"></label><div id="meta-original" class="file-meta" role="status"></div><details><summary>Ver o pegar texto</summary><label class="sr-only" for="text-original">Texto del contrato original</label><textarea id="text-original" autocomplete="off" autocorrect="off" placeholder="También podés pegar el texto del original para compararlo." spellcheck="false"></textarea></details></div>
+     <div class="document-card"><div class="document-label"><span class="doc-dot received"></span><h3>Contrato recibido</h3><span class="pill">A REVISAR</span></div><p>La versión que te devolvió el vendedor.</p><label class="dropzone" id="drop-received" for="file-received"><span class="upload-icon">↑</span><strong>Elegí el archivo recibido</strong><span>o arrastralo hasta acá</span><input id="file-received" type="file" accept=".pdf,.docx,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document"></label><div id="meta-received" class="file-meta" role="status"></div><details><summary>Ver o pegar texto</summary><label class="sr-only" for="text-received">Texto del contrato recibido</label><textarea id="text-received" autocomplete="off" autocorrect="off" placeholder="Pegá acá el texto de la versión recibida." spellcheck="false"></textarea></details></div>
     </div>
     <div class="compare-row"><label class="check"><input type="checkbox" id="ignore-case" autocomplete="off">Ignorar diferencias entre mayúsculas y minúsculas</label><button class="btn primary" id="compare" disabled>Comparar contratos <span>→</span></button></div>
-    <p class="method-note">Los PDF se procesan en tu navegador. La revisión y el borrador se borran al recargar o salir. Las firmas, imágenes, el formato y las páginas escaneadas necesitan revisión visual.</p>
+    <p class="method-note">Los archivos se procesan en tu navegador. La revisión y el borrador se borran al recargar o salir. Las firmas, imágenes, el formato y las páginas escaneadas necesitan revisión visual.</p>
    </section>
    <div id="alert" class="alert" role="alert" hidden></div>
-   <div id="empty-state" class="empty-state"><span class="empty-symbol">⇄</span><div><p>Cargá los dos PDF para ver los cambios y preparar la respuesta al vendedor.</p></div></div>
+   <div id="empty-state" class="empty-state"><span class="empty-symbol">⇄</span><div><p>Cargá las dos versiones para ver los cambios y preparar la respuesta al vendedor.</p></div></div>
    <section class="results" id="results" hidden aria-labelledby="results-title">
     <div class="result-heading"><div><div class="eyebrow">REVISIÓN DE TEXTO</div><h2 id="results-title">Diferencias entre los contratos</h2><p id="result-description"></p></div><button id="clear" class="btn ghost">Limpiar revisión</button></div>
     <div class="stats"><div><span id="count-total">0</span><p>Observaciones</p></div><div><span id="count-missing">0</span><p>Texto ausente</p></div><div><span id="count-changed">0</span><p>Texto modificado</p></div><div><span id="count-added">0</span><p>Texto agregado</p></div></div>
     <div class="review-layout"><div class="review-main"><div class="filter-row"><div class="tabs" role="group" aria-label="Filtrar diferencias"><button class="active" data-filter="all">Todas</button><button data-filter="missing">Ausentes</button><button data-filter="changed">Modificadas</button><button data-filter="added">Agregadas</button></div><button class="text-button" id="select-all">Seleccionar visibles</button></div><div id="difference-list"></div><p class="method-note">Una diferencia textual puede deberse al orden de lectura del PDF. Revisá el contexto antes de incluirla en el correo. No se evalúa el significado jurídico.</p></div>
      <aside class="mail-card"><div class="mail-title"><span class="mail-icon">✉</span><div><h3>Respuesta al vendedor</h3><p><span id="selected-count">0</span> observaciones seleccionadas</p></div></div><label for="seller-name">Nombre del vendedor</label><input id="seller-name" placeholder="Ej. María Pérez" autocomplete="off" spellcheck="false" autocorrect="off"><label for="seller-email">Correo del vendedor</label><input id="seller-email" type="email" placeholder="nombre@empresa.com" autocomplete="off" spellcheck="false" autocorrect="off"><label for="contract-ref">Referencia del contrato</label><input id="contract-ref" placeholder="Ej. Contrato 12345 / Cliente" autocomplete="off" spellcheck="false" autocorrect="off"><label for="language">Idioma del correo</label><select id="language" autocomplete="off"><option value="es">Español</option><option value="en">English</option><option value="pt">Português</option></select><button class="btn primary full" id="generate" disabled>Generar borrador <span>→</span></button><p class="mail-footnote">Se incluyen únicamente las observaciones que selecciones. El correo queda listo para tu revisión.</p></aside></div>
    </section>
-   <section class="section-panel draft-panel" id="draft-panel" hidden aria-labelledby="draft-title"><div class="section-heading"><h2 id="draft-title"><span class="section-num">03</span>Borrador del correo</h2><span class="pill" id="draft-state">EDITABLE</span></div><div class="draft-grid"><label>Para<input id="draft-to" autocomplete="off" autocorrect="off" type="email" placeholder="Correo del vendedor"></label><label>Asunto<input id="draft-subject" autocomplete="off" autocorrect="off"></label></div><label class="draft-body-label" for="draft-body">Mensaje</label><textarea id="draft-body" autocomplete="off" autocorrect="off" rows="15" spellcheck="false"></textarea><div class="draft-actions"><span>El envío se realiza desde tu aplicación de correo.</span><div><button id="open-mail" class="btn primary">Abrir en correo <span>↗</span></button></div></div><p class="method-note">Al hacer clic en «Abrir en correo», tu aplicación de correo recibe el borrador.</p></section>
+   <section class="section-panel draft-panel" id="draft-panel" hidden aria-labelledby="draft-title"><div class="section-heading"><h2 id="draft-title"><span class="section-num">03</span>Borrador del correo</h2><span class="pill" id="draft-state">EDITABLE</span></div><div class="draft-grid"><label>Para<input id="draft-to" autocomplete="off" autocorrect="off" type="email" placeholder="Correo del vendedor"></label><label>Asunto<input id="draft-subject" autocomplete="off" autocorrect="off"></label></div><label class="draft-body-label" for="draft-body">Mensaje</label><textarea id="draft-body" autocomplete="off" autocorrect="off" rows="15" spellcheck="false"></textarea><div class="draft-actions"><span>El envío se realiza desde tu aplicación de correo.</span><div><button id="copy-draft" class="btn secondary" type="button">Copiar borrador completo</button><button id="open-mail" class="btn primary">Abrir en correo <span>↗</span></button></div></div><p id="mail-transfer-status" class="method-note" aria-live="polite"></p></section>
    <footer><span>CONTRACT DESK</span><p>Comparación documental · Revisión humana antes del envío</p><span id="app-status" role="status" aria-live="polite">Listo para empezar</span></footer>
   </div>
  </main>
 </div>
+<dialog id="capture-dialog" aria-labelledby="capture-title">
+ <div class="capture-header"><h2 id="capture-title">Ubicación en el archivo recibido</h2><button id="close-capture" class="btn secondary small" type="button">Cerrar</button></div>
+ <div class="capture-toolbar">
+  <label for="capture-page">Ubicación</label><select id="capture-page" autocomplete="off"></select>
+  <button id="save-capture" class="btn secondary small" type="button" hidden>Descargar PNG</button>
+ </div>
+ <p id="capture-status" role="status"></p>
+ <canvas id="capture-canvas" hidden aria-label="Captura del PDF recibido"></canvas>
+ <div id="capture-text" hidden></div>
+</dialog>
 <div id="toast" role="status" hidden></div>
 <script>((global,factory)=>{"object"==typeof exports&&"undefined"!=typeof module?factory(exports):"function"==typeof define&&define.amd?define(["exports"],factory):factory((global="undefined"!=typeof globalThis?globalThis:global||self).Diff={})})(this,function(exports){class Diff{diff(oldStr,newStr,options={}){let callback;"function"==typeof options?(callback=options,options={}):"callback"in options&&(callback=options.callback);oldStr=this.castInput(oldStr,options),newStr=this.castInput(newStr,options),oldStr=this.removeEmpty(this.tokenize(oldStr,options)),newStr=this.removeEmpty(this.tokenize(newStr,options));return this.diffWithOptionsObj(oldStr,newStr,options,callback)}diffWithOptionsObj(oldTokens,newTokens,options,callback){let _a,done=value=>{if(value=this.postProcess(value,options),!callback)return value;setTimeout(function(){callback(value)},0)},newLen=newTokens.length,oldLen=oldTokens.length,editLength=1,maxEditLength=newLen+oldLen;null!=options.maxEditLength&&(maxEditLength=Math.min(maxEditLength,options.maxEditLength));var maxExecutionTime=null!=(_a=options.timeout)?_a:1/0;let abortAfterTimestamp=Date.now()+maxExecutionTime,bestPath=[{oldPos:-1,lastComponent:void 0}],newPos=this.extractCommon(bestPath[0],newTokens,oldTokens,0,options);if(bestPath[0].oldPos+1>=oldLen&&newPos+1>=newLen)return done(this.buildValues(bestPath[0].lastComponent,newTokens,oldTokens));let minDiagonalToConsider=-1/0,maxDiagonalToConsider=1/0,execEditLength=()=>{for(let diagonalPath=Math.max(minDiagonalToConsider,-editLength);diagonalPath<=Math.min(maxDiagonalToConsider,editLength);diagonalPath+=2){let basePath;var removePath=bestPath[diagonalPath-1],addPath=bestPath[diagonalPath+1];removePath&&(bestPath[diagonalPath-1]=void 0);let canAdd=!1;addPath&&(addPathNewPos=addPath.oldPos-diagonalPath,canAdd=addPath&&0<=addPathNewPos&&addPathNewPos<newLen);var addPathNewPos=removePath&&removePath.oldPos+1<oldLen;if(canAdd||addPathNewPos){if(basePath=!addPathNewPos||canAdd&&removePath.oldPos<addPath.oldPos?this.addToPath(addPath,!0,!1,0,options):this.addToPath(removePath,!1,!0,1,options),newPos=this.extractCommon(basePath,newTokens,oldTokens,diagonalPath,options),basePath.oldPos+1>=oldLen&&newPos+1>=newLen)return done(this.buildValues(basePath.lastComponent,newTokens,oldTokens))||!0;(bestPath[diagonalPath]=basePath).oldPos+1>=oldLen&&(maxDiagonalToConsider=Math.min(maxDiagonalToConsider,diagonalPath-1)),newPos+1>=newLen&&(minDiagonalToConsider=Math.max(minDiagonalToConsider,diagonalPath+1))}else bestPath[diagonalPath]=void 0}editLength++};if(callback)!function exec(){setTimeout(function(){if(editLength>maxEditLength||Date.now()>abortAfterTimestamp)return callback(void 0);execEditLength()||exec()},0)}();else for(;editLength<=maxEditLength&&Date.now()<=abortAfterTimestamp;){var ret=execEditLength();if(ret)return ret}}addToPath(path,added,removed,oldPosInc,options){var last=path.lastComponent;return last&&!options.oneChangePerToken&&last.added===added&&last.removed===removed?{oldPos:path.oldPos+oldPosInc,lastComponent:{count:last.count+1,added:added,removed:removed,previousComponent:last.previousComponent}}:{oldPos:path.oldPos+oldPosInc,lastComponent:{count:1,added:added,removed:removed,previousComponent:last}}}extractCommon(basePath,newTokens,oldTokens,diagonalPath,options){var newLen=newTokens.length,oldLen=oldTokens.length;let oldPos=basePath.oldPos,newPos=oldPos-diagonalPath,commonCount=0;for(;newPos+1<newLen&&oldPos+1<oldLen&&this.equals(oldTokens[oldPos+1],newTokens[newPos+1],options);)newPos++,oldPos++,commonCount++,options.oneChangePerToken&&(basePath.lastComponent={count:1,previousComponent:basePath.lastComponent,added:!1,removed:!1});return commonCount&&!options.oneChangePerToken&&(basePath.lastComponent={count:commonCount,previousComponent:basePath.lastComponent,added:!1,removed:!1}),basePath.oldPos=oldPos,newPos}equals(left,right,options){return options.comparator?options.comparator(left,right):left===right||!!options.ignoreCase&&left.toLowerCase()===right.toLowerCase()}removeEmpty(array){var ret=[];for(let i=0;i<array.length;i++)array[i]&&ret.push(array[i]);return ret}castInput(value,options){return value}tokenize(value,options){return Array.from(value)}join(chars){return chars.join("")}postProcess(changeObjects,options){return changeObjects}get useLongestToken(){return!1}buildValues(lastComponent,newTokens,oldTokens){for(var nextComponent,components=[];lastComponent;)components.push(lastComponent),nextComponent=lastComponent.previousComponent,delete lastComponent.previousComponent,lastComponent=nextComponent;components.reverse();var componentLen=components.length;let componentPos=0,newPos=0,oldPos=0;for(;componentPos<componentLen;componentPos++){var component=components[componentPos];if(component.removed)component.value=this.join(oldTokens.slice(oldPos,oldPos+component.count)),oldPos+=component.count;else{if(!component.added&&this.useLongestToken){let value=newTokens.slice(newPos,newPos+component.count);value=value.map(function(value,i){i=oldTokens[oldPos+i];return i.length>value.length?i:value}),component.value=this.join(value)}else component.value=this.join(newTokens.slice(newPos,newPos+component.count));newPos+=component.count,component.added||(oldPos+=component.count)}}return components}}class CharacterDiff extends Diff{}let characterDiff=new CharacterDiff;function longestCommonPrefix(str1,str2){let i;for(i=0;i<str1.length&&i<str2.length;i++)if(str1[i]!=str2[i])return str1.slice(0,i);return str1.slice(0,i)}function longestCommonSuffix(str1,str2){let i;if(!str1||!str2||str1[str1.length-1]!=str2[str2.length-1])return"";for(i=0;i<str1.length&&i<str2.length;i++)if(str1[str1.length-(i+1)]!=str2[str2.length-(i+1)])return str1.slice(-i);return str1.slice(-i)}function replacePrefix(string,oldPrefix,newPrefix){if(string.slice(0,oldPrefix.length)!=oldPrefix)throw Error(`string ${JSON.stringify(string)} doesn't start with prefix ${JSON.stringify(oldPrefix)}; this is a bug`);return newPrefix+string.slice(oldPrefix.length)}function replaceSuffix(string,oldSuffix,newSuffix){if(!oldSuffix)return string+newSuffix;if(string.slice(-oldSuffix.length)!=oldSuffix)throw Error(`string ${JSON.stringify(string)} doesn't end with suffix ${JSON.stringify(oldSuffix)}; this is a bug`);return string.slice(0,-oldSuffix.length)+newSuffix}function removePrefix(string,oldPrefix){return replacePrefix(string,oldPrefix,"")}function removeSuffix(string,oldSuffix){return replaceSuffix(string,oldSuffix,"")}function maximumOverlap(string1,string2){return string2.slice(0,((a,b)=>{let startA=0,endB=(a.length>b.length&&(startA=a.length-b.length),b.length),map=(a.length<b.length&&(endB=a.length),Array(endB)),k=0;map[0]=0;for(let j=1;j<endB;j++){for(b[j]==b[k]?map[j]=map[k]:map[j]=k;0<k&&b[j]!=b[k];)k=map[k];b[j]==b[k]&&k++}k=0;for(let i=startA;i<a.length;i++){for(;0<k&&a[i]!=b[k];)k=map[k];a[i]==b[k]&&k++}return k})(string1,string2))}function trailingWs(string){let i;for(i=string.length-1;0<=i&&string[i].match(/\s/);i--);return string.substring(i+1)}function leadingWs(string){string=string.match(/^\s*/);return string?string[0]:""}let extendedWordChars="a-zA-Z0-9_\\u{AD}\\u{C0}-\\u{D6}\\u{D8}-\\u{F6}\\u{F8}-\\u{2C6}\\u{2C8}-\\u{2D7}\\u{2DE}-\\u{2FF}\\u{1E00}-\\u{1EFF}",tokenizeIncludingWhitespace=new RegExp(`[${extendedWordChars}]+|\\s+|[^${extendedWordChars}]`,"ug");class WordDiff extends Diff{equals(left,right,options){return options.ignoreCase&&(left=left.toLowerCase(),right=right.toLowerCase()),left.trim()===right.trim()}tokenize(value,options={}){let parts;if(options.intlSegmenter){var segmentObj,options=options.intlSegmenter;if("word"!=options.resolvedOptions().granularity)throw new Error('The segmenter passed must have a granularity of "word"');parts=[];for(segmentObj of Array.from(options.segment(value))){var segment=segmentObj.segment;parts.length&&/\s/.test(parts[parts.length-1])&&/\s/.test(segment)?parts[parts.length-1]+=segment:parts.push(segment)}}else parts=value.match(tokenizeIncludingWhitespace)||[];let tokens=[],prevPart=null;return parts.forEach(part=>{/\s/.test(part)?null==prevPart?tokens.push(part):tokens.push(tokens.pop()+part):null!=prevPart&&/\s/.test(prevPart)?tokens[tokens.length-1]==prevPart?tokens.push(tokens.pop()+part):tokens.push(prevPart+part):tokens.push(part),prevPart=part}),tokens}join(tokens){return tokens.map((token,i)=>0==i?token:token.replace(/^\s+/,"")).join("")}postProcess(changes,options){if(changes&&!options.oneChangePerToken){let lastKeep=null,insertion=null,deletion=null;changes.forEach(change=>{change.added?insertion=change:deletion=change.removed?change:((insertion||deletion)&&dedupeWhitespaceInChangeObjects(lastKeep,deletion,insertion,change),lastKeep=change,insertion=null)}),(insertion||deletion)&&dedupeWhitespaceInChangeObjects(lastKeep,deletion,insertion,null)}return changes}}let wordDiff=new WordDiff;function dedupeWhitespaceInChangeObjects(startKeep,deletion,insertion,endKeep){if(deletion&&insertion){var oldWsPrefix=leadingWs(deletion.value),oldWsSuffix=trailingWs(deletion.value),newWsPrefix=leadingWs(insertion.value),newWsSuffix=trailingWs(insertion.value);startKeep&&(oldWsPrefix=longestCommonPrefix(oldWsPrefix,newWsPrefix),startKeep.value=replaceSuffix(startKeep.value,newWsPrefix,oldWsPrefix),deletion.value=removePrefix(deletion.value,oldWsPrefix),insertion.value=removePrefix(insertion.value,oldWsPrefix)),endKeep&&(newWsPrefix=longestCommonSuffix(oldWsSuffix,newWsSuffix),endKeep.value=replacePrefix(endKeep.value,newWsSuffix,newWsPrefix),deletion.value=removeSuffix(deletion.value,newWsPrefix),insertion.value=removeSuffix(insertion.value,newWsPrefix))}else if(insertion){if(startKeep&&(oldWsPrefix=leadingWs(insertion.value),insertion.value=insertion.value.substring(oldWsPrefix.length)),endKeep){let ws=leadingWs(endKeep.value);endKeep.value=endKeep.value.substring(ws.length)}}else if(startKeep&&endKeep){oldWsSuffix=leadingWs(endKeep.value),newWsSuffix=leadingWs(deletion.value),newWsPrefix=trailingWs(deletion.value),insertion=longestCommonPrefix(oldWsSuffix,newWsSuffix),oldWsPrefix=(deletion.value=removePrefix(deletion.value,insertion),longestCommonSuffix(removePrefix(oldWsSuffix,insertion),newWsPrefix));deletion.value=removeSuffix(deletion.value,oldWsPrefix),endKeep.value=replacePrefix(endKeep.value,oldWsSuffix,oldWsPrefix),startKeep.value=replaceSuffix(startKeep.value,oldWsSuffix,oldWsSuffix.slice(0,oldWsSuffix.length-oldWsPrefix.length))}else if(endKeep){newWsSuffix=leadingWs(endKeep.value),insertion=maximumOverlap(trailingWs(deletion.value),newWsSuffix);deletion.value=removeSuffix(deletion.value,insertion)}else if(startKeep){let overlap=maximumOverlap(trailingWs(startKeep.value),leadingWs(deletion.value));deletion.value=removePrefix(deletion.value,overlap)}}class WordsWithSpaceDiff extends Diff{tokenize(value){var regex=new RegExp(`(\\r?\\n)|[${extendedWordChars}]+|[^\\S\\n\\r]+|[^${extendedWordChars}]`,"ug");return value.match(regex)||[]}}let wordsWithSpaceDiff=new WordsWithSpaceDiff;function diffWordsWithSpace(oldStr,newStr,options){return wordsWithSpaceDiff.diff(oldStr,newStr,options)}class LineDiff extends Diff{constructor(){super(...arguments),this.tokenize=tokenize}equals(left,right,options){return options.ignoreWhitespace?(options.newlineIsToken&&left.includes("\n")||(left=left.trim()),options.newlineIsToken&&right.includes("\n")||(right=right.trim())):options.ignoreNewlineAtEof&&!options.newlineIsToken&&(left.endsWith("\n")&&(left=left.slice(0,-1)),right.endsWith("\n"))&&(right=right.slice(0,-1)),super.equals(left,right,options)}}let lineDiff=new LineDiff;function diffLines(oldStr,newStr,options){return lineDiff.diff(oldStr,newStr,options)}function tokenize(value,options){var retLines=[],linesAndNewlines=(value=options.stripTrailingCr?value.replace(/\r\n/g,"\n"):value).split(/(\n|\r\n)/);linesAndNewlines[linesAndNewlines.length-1]||linesAndNewlines.pop();for(let i=0;i<linesAndNewlines.length;i++){var line=linesAndNewlines[i];i%2&&!options.newlineIsToken?retLines[retLines.length-1]+=line:retLines.push(line)}return retLines}class SentenceDiff extends Diff{tokenize(value){var _a,char,result=[];let tokenStartI=0;for(let i=0;i<value.length;i++){if(i==value.length-1){result.push(value.slice(tokenStartI));break}if(("."==(char=value[i])||"!"==char||"?"==char)&&value[i+1].match(/\s/)){for(result.push(value.slice(tokenStartI,i+1)),i=tokenStartI=i+1;null!=(_a=value[i+1])&&_a.match(/\s/);)i++;result.push(value.slice(tokenStartI,i+1)),tokenStartI=i+1}}return result}}let sentenceDiff=new SentenceDiff;class CssDiff extends Diff{tokenize(value){return value.split(/([{}:;,]|\s+)/)}}let cssDiff=new CssDiff;class JsonDiff extends Diff{constructor(){super(...arguments),this.tokenize=tokenize}get useLongestToken(){return!0}castInput(value,options){let{undefinedReplacement,stringifyReplacer=(k,v)=>void 0===v?undefinedReplacement:v}=options;return"string"==typeof value?value:JSON.stringify(canonicalize(value,null,null,stringifyReplacer),null,"  ")}equals(left,right,options){return super.equals(left.replace(/,([\r\n])/g,"$1"),right.replace(/,([\r\n])/g,"$1"),options)}}let jsonDiff=new JsonDiff;function canonicalize(obj,stack,replacementStack,replacer,key){stack=stack||[],replacementStack=replacementStack||[],replacer&&(obj=replacer(void 0===key?"":key,obj));let i;for(i=0;i<stack.length;i+=1)if(stack[i]===obj)return replacementStack[i];let canonicalizedObj;if("[object Array]"===Object.prototype.toString.call(obj)){for(stack.push(obj),canonicalizedObj=new Array(obj.length),replacementStack.push(canonicalizedObj),i=0;i<obj.length;i+=1)canonicalizedObj[i]=canonicalize(obj[i],stack,replacementStack,replacer,String(i));stack.pop(),replacementStack.pop()}else if("object"==typeof(obj=obj&&obj.toJSON?obj.toJSON():obj)&&null!==obj){stack.push(obj),canonicalizedObj={},replacementStack.push(canonicalizedObj);var sortedKeys=[];let key;for(key in obj)Object.prototype.hasOwnProperty.call(obj,key)&&sortedKeys.push(key);for(sortedKeys.sort(),i=0;i<sortedKeys.length;i+=1)key=sortedKeys[i],canonicalizedObj[key]=canonicalize(obj[key],stack,replacementStack,replacer,key);stack.pop(),replacementStack.pop()}else canonicalizedObj=obj;return canonicalizedObj}class ArrayDiff extends Diff{tokenize(value){return value.slice()}join(value){return value}removeEmpty(value){return value}}let arrayDiff=new ArrayDiff;function parsePatch(uniDiff){let diffstr=uniDiff.split(/\n/),list=[],i=0;function parseIndex(){var index={};for(list.push(index);i<diffstr.length;){var line=diffstr[i];if(/^(---|\+\+\+|@@)\s/.test(line))break;var headerMatch=/^(?:Index:|diff(?: -r \w+)+)\s+/.exec(line);headerMatch&&(index.index=line.substring(headerMatch[0].length).trim()),i++}for(parseFileHeader(index),parseFileHeader(index),index.hunks=[];i<diffstr.length;){let line=diffstr[i];if(/^(Index:\s|diff\s|---\s|\+\+\+\s|===================================================================)/.test(line))break;if(/^@@/.test(line))index.hunks.push((()=>{var chunkHeaderIndex=i,chunkHeaderLine=diffstr[i++],hunk={oldStart:+(chunkHeaderLine=chunkHeaderLine.split(/@@ -(\d+)(?:,(\d+))? \+(\d+)(?:,(\d+))? @@/))[1],oldLines:void 0===chunkHeaderLine[2]?1:+chunkHeaderLine[2],newStart:+chunkHeaderLine[3],newLines:void 0===chunkHeaderLine[4]?1:+chunkHeaderLine[4],lines:[]};0===hunk.oldLines&&(hunk.oldStart+=1),0===hunk.newLines&&(hunk.newStart+=1);let addCount=0,removeCount=0;for(;i<diffstr.length&&(removeCount<hunk.oldLines||addCount<hunk.newLines||null!=(_a=diffstr[i])&&_a.startsWith("\\"));i++){var _a=0==diffstr[i].length&&i!=diffstr.length-1?" ":diffstr[i][0];if("+"!==_a&&"-"!==_a&&" "!==_a&&"\\"!==_a)throw new Error(`Hunk at line ${chunkHeaderIndex+1} contained invalid line `+diffstr[i]);hunk.lines.push(diffstr[i]),"+"===_a?addCount++:"-"===_a?removeCount++:" "===_a&&(addCount++,removeCount++)}if(addCount||1!==hunk.newLines||(hunk.newLines=0),removeCount||1!==hunk.oldLines||(hunk.oldLines=0),addCount!==hunk.newLines)throw new Error("Added line count did not match for hunk at line "+(chunkHeaderIndex+1));if(removeCount===hunk.oldLines)return hunk;throw new Error("Removed line count did not match for hunk at line "+(chunkHeaderIndex+1))})());else{if(line)throw new Error("Unknown line "+(i+1)+" "+JSON.stringify(line));i++}}}function parseFileHeader(index){var fileHeaderMatch=/^(---|\+\+\+)\s+/.exec(diffstr[i]);if(fileHeaderMatch){var fileHeaderMatch=fileHeaderMatch[1],data=diffstr[i].substring(3).trim().split("\t",2),header=(data[1]||"").trim();let fileName=data[0].replace(/\\\\/g,"\\");fileName.startsWith('"')&&fileName.endsWith('"')&&(fileName=fileName.substr(1,fileName.length-2)),"---"===fileHeaderMatch?(index.oldFileName=fileName,index.oldHeader=header):(index.newFileName=fileName,index.newHeader=header),i++}}for(;i<diffstr.length;)parseIndex();return list}function applyPatch(source,patch,options={}){let patches;if(1<(patches="string"==typeof patch?parsePatch(patch):Array.isArray(patch)?patch:[patch]).length)throw new Error("applyPatch only works with a single input.");return((source,patch,options={})=>{!options.autoConvertLineEndings&&null!=options.autoConvertLineEndings||((string=>string.includes("\r\n")&&!string.startsWith("\n")&&!string.match(/[^\r]\n/))(source)&&(patch=>!(patch=Array.isArray(patch)?patch:[patch]).some(index=>index.hunks.some(hunk=>hunk.lines.some(line=>!line.startsWith("\\")&&line.endsWith("\r")))))(patch)?patch=function unixToWin(patch){return Array.isArray(patch)?patch.map(p=>unixToWin(p)):Object.assign(Object.assign({},patch),{hunks:patch.hunks.map(hunk=>Object.assign(Object.assign({},hunk),{lines:hunk.lines.map((line,i)=>line.startsWith("\\")||line.endsWith("\r")||null!=(i=hunk.lines[i+1])&&i.startsWith("\\")?line:line+"\r")}))})}(patch):(string=>!string.includes("\r\n")&&string.includes("\n"))(source)&&(patch=>(patch=Array.isArray(patch)?patch:[patch]).some(index=>index.hunks.some(hunk=>hunk.lines.some(line=>line.endsWith("\r"))))&&patch.every(index=>index.hunks.every(hunk=>hunk.lines.every((line,i)=>line.startsWith("\\")||line.endsWith("\r")||(null==(line=hunk.lines[i+1])?void 0:line.startsWith("\\"))))))(patch)&&(patch=function winToUnix(patch){return Array.isArray(patch)?patch.map(p=>winToUnix(p)):Object.assign(Object.assign({},patch),{hunks:patch.hunks.map(hunk=>Object.assign(Object.assign({},hunk),{lines:hunk.lines.map(line=>line.endsWith("\r")?line.substring(0,line.length-1):line)}))})}(patch)));let lines=source.split("\n"),hunks=patch.hunks,compareLine=options.compareLine||((lineNumber,line,operation,patchContent)=>line===patchContent),fuzzFactor=options.fuzzFactor||0,minLine=0;if(fuzzFactor<0||!Number.isInteger(fuzzFactor))throw new Error("fuzzFactor must be a non-negative integer");if(!hunks.length)return source;let prevLine="",removeEOFNL=!1,addEOFNL=!1;for(let i=0;i<hunks[hunks.length-1].lines.length;i++){var line=hunks[hunks.length-1].lines[i];"\\"==line[0]&&("+"==prevLine[0]?removeEOFNL=!0:"-"==prevLine[0]&&(addEOFNL=!0)),prevLine=line}if(removeEOFNL){if(addEOFNL){if(!fuzzFactor&&""==lines[lines.length-1])return!1}else if(""==lines[lines.length-1])lines.pop();else if(!fuzzFactor)return!1}else if(addEOFNL)if(""!=lines[lines.length-1])lines.push("");else if(!fuzzFactor)return!1;let resultLines=[],prevHunkOffset=0;for(let i=0;i<hunks.length;i++){var hunk=hunks[i];let hunkResult;var maxLine=lines.length-hunk.oldLines+fuzzFactor;let toPos;for(let maxErrors=0;maxErrors<=fuzzFactor;maxErrors++){for(var iterator=((start,minLine,maxLine)=>{let wantForward=!0,backwardExhausted=!1,forwardExhausted=!1,localOffset=1;return function iterator(){if(wantForward&&!forwardExhausted){if(backwardExhausted?localOffset++:wantForward=!1,start+localOffset<=maxLine)return start+localOffset;forwardExhausted=!0}if(!backwardExhausted)return forwardExhausted||(wantForward=!0),minLine<=start-localOffset?start-localOffset++:(backwardExhausted=!0,iterator())}})(toPos=hunk.oldStart+prevHunkOffset-1,minLine,maxLine);void 0!==toPos&&!(hunkResult=function applyHunk(hunkLines,toPos,maxErrors,hunkLinesI=0,lastContextLineMatched=!0,patchedLines=[],patchedLinesLength=0){let nConsecutiveOldContextLines=0,nextContextLineMustMatch=!1;for(;hunkLinesI<hunkLines.length;hunkLinesI++){var operation=0<(hunkLine=hunkLines[hunkLinesI]).length?hunkLine[0]:" ",hunkLine=0<hunkLine.length?hunkLine.substr(1):hunkLine;if("-"===operation){if(!compareLine(toPos+1,lines[toPos],operation,hunkLine))return maxErrors&&null!=lines[toPos]?(patchedLines[patchedLinesLength]=lines[toPos],applyHunk(hunkLines,toPos+1,maxErrors-1,hunkLinesI,!1,patchedLines,patchedLinesLength+1)):null;toPos++,nConsecutiveOldContextLines=0}if("+"===operation){if(!lastContextLineMatched)return null;patchedLines[patchedLinesLength]=hunkLine,patchedLinesLength++,nConsecutiveOldContextLines=0,nextContextLineMustMatch=!0}if(" "===operation){if(nConsecutiveOldContextLines++,patchedLines[patchedLinesLength]=lines[toPos],!compareLine(toPos+1,lines[toPos],operation,hunkLine))return nextContextLineMustMatch||!maxErrors?null:lines[toPos]&&(applyHunk(hunkLines,toPos+1,maxErrors-1,hunkLinesI+1,!1,patchedLines,patchedLinesLength+1)||applyHunk(hunkLines,toPos+1,maxErrors-1,hunkLinesI,!1,patchedLines,patchedLinesLength+1))||applyHunk(hunkLines,toPos,maxErrors-1,hunkLinesI+1,!1,patchedLines,patchedLinesLength);patchedLinesLength++,lastContextLineMatched=!0,nextContextLineMustMatch=!1,toPos++}}return patchedLinesLength-=nConsecutiveOldContextLines,toPos-=nConsecutiveOldContextLines,patchedLines.length=patchedLinesLength,{patchedLines:patchedLines,oldLineLastI:toPos-1}}(hunk.lines,toPos,maxErrors));toPos=iterator());if(hunkResult)break}if(!hunkResult)return!1;for(let i=minLine;i<toPos;i++)resultLines.push(lines[i]);for(let i=0;i<hunkResult.patchedLines.length;i++){var line=hunkResult.patchedLines[i];resultLines.push(line)}minLine=hunkResult.oldLineLastI+1,prevHunkOffset=toPos+1-hunk.oldStart}for(let i=minLine;i<lines.length;i++)resultLines.push(lines[i]);return resultLines.join("\n")})(source,patches[0],options)}let INCLUDE_HEADERS={includeIndex:!0,includeUnderline:!0,includeFileHeaders:!0};function structuredPatch(oldFileName,newFileName,oldStr,newStr,oldHeader,newHeader,options){let optionsObj,context=(void 0===(optionsObj=options?"function"==typeof options?{callback:options}:options:{}).context&&(optionsObj.context=4),optionsObj.context);if(optionsObj.newlineIsToken)throw new Error("newlineIsToken may not be used with patch-generation functions, only with diffing functions");if(!optionsObj.callback)return diffLinesResultToPatch(diffLines(oldStr,newStr,optionsObj));{let callback=optionsObj.callback;diffLines(oldStr,newStr,Object.assign(Object.assign({},optionsObj),{callback:diff=>{diff=diffLinesResultToPatch(diff);callback(diff)}}))}function diffLinesResultToPatch(diff){if(diff){diff.push({value:"",lines:[]});var hunks=[];let oldRangeStart=0,newRangeStart=0,curRange=[],oldLine=1,newLine=1;for(let i=0;i<diff.length;i++){var line,current=diff[i],lines=current.lines||(text=>{var hasTrailingNl=text.endsWith("\n"),text=text.split("\n").map(line=>line+"\n");return hasTrailingNl?text.pop():text.push(text.pop().slice(0,-1)),text})(current.value);if(current.lines=lines,current.added||current.removed){oldRangeStart||(prev=diff[i-1],oldRangeStart=oldLine,newRangeStart=newLine,prev&&(curRange=0<context?contextLines(prev.lines.slice(-context)):[],oldRangeStart-=curRange.length,newRangeStart-=curRange.length));for(line of lines)curRange.push((current.added?"+":"-")+line);current.added?newLine+=lines.length:oldLine+=lines.length}else{if(oldRangeStart)if(lines.length<=2*context&&i<diff.length-2)for(let line of contextLines(lines))curRange.push(line);else{var prev=Math.min(lines.length,context);for(let line of contextLines(lines.slice(0,prev)))curRange.push(line);var hunk={oldStart:oldRangeStart,oldLines:oldLine-oldRangeStart+prev,newStart:newRangeStart,newLines:newLine-newRangeStart+prev,lines:curRange};hunks.push(hunk),oldRangeStart=0,newRangeStart=0,curRange=[]}oldLine+=lines.length,newLine+=lines.length}}for(let hunk of hunks)for(let i=0;i<hunk.lines.length;i++)hunk.lines[i].endsWith("\n")?hunk.lines[i]=hunk.lines[i].slice(0,-1):(hunk.lines.splice(i+1,0,"\\ No newline at end of file"),i++);return{oldFileName:oldFileName,newFileName:newFileName,oldHeader:oldHeader,newHeader:newHeader,hunks:hunks};function contextLines(lines){return lines.map(function(entry){return" "+entry})}}}}function formatPatch(patch,headerOptions){if(headerOptions=headerOptions||INCLUDE_HEADERS,Array.isArray(patch)){if(1<patch.length&&!headerOptions.includeFileHeaders)throw new Error("Cannot omit file headers on a multi-file patch. (The result would be unparseable; how would a tool trying to apply the patch know which changes are to which file?)");return patch.map(p=>formatPatch(p,headerOptions)).join("\n")}var ret=[];headerOptions.includeIndex&&patch.oldFileName==patch.newFileName&&ret.push("Index: "+patch.oldFileName),headerOptions.includeUnderline&&ret.push("==================================================================="),headerOptions.includeFileHeaders&&(ret.push("--- "+patch.oldFileName+(void 0===patch.oldHeader?"":"\t"+patch.oldHeader)),ret.push("+++ "+patch.newFileName+(void 0===patch.newHeader?"":"\t"+patch.newHeader)));for(let i=0;i<patch.hunks.length;i++){var line,hunk=patch.hunks[i];0===hunk.oldLines&&--hunk.oldStart,0===hunk.newLines&&--hunk.newStart,ret.push("@@ -"+hunk.oldStart+","+hunk.oldLines+" +"+hunk.newStart+","+hunk.newLines+" @@");for(line of hunk.lines)ret.push(line)}return ret.join("\n")+"\n"}function createTwoFilesPatch(oldFileName,newFileName,oldStr,newStr,oldHeader,newHeader,options){if(null!=(options="function"==typeof options?{callback:options}:options)&&options.callback){let callback=options.callback;structuredPatch(oldFileName,newFileName,oldStr,newStr,oldHeader,newHeader,Object.assign(Object.assign({},options),{callback:patchObj=>{patchObj?callback(formatPatch(patchObj,options.headerOptions)):callback(void 0)}}))}else{oldFileName=structuredPatch(oldFileName,newFileName,oldStr,newStr,oldHeader,newHeader,options);if(oldFileName)return formatPatch(oldFileName,null==options?void 0:options.headerOptions)}}exports.Diff=Diff,exports.FILE_HEADERS_ONLY={includeIndex:!1,includeUnderline:!1,includeFileHeaders:!0},exports.INCLUDE_HEADERS=INCLUDE_HEADERS,exports.OMIT_HEADERS={includeIndex:!1,includeUnderline:!1,includeFileHeaders:!1},exports.applyPatch=applyPatch,exports.applyPatches=function(uniDiff,options){let spDiff="string"==typeof uniDiff?parsePatch(uniDiff):uniDiff,currentIndex=0;!function processIndex(){let index=spDiff[currentIndex++];if(!index)return options.complete();options.loadFile(index,function(err,data){if(err)return options.complete(err);err=applyPatch(data,index,options),options.patched(index,err,function(err){if(err)return options.complete(err);processIndex()})})}()},exports.arrayDiff=arrayDiff,exports.canonicalize=canonicalize,exports.characterDiff=characterDiff,exports.convertChangesToDMP=function(changes){var ret=[];let change,operation;for(let i=0;i<changes.length;i++)change=changes[i],operation=change.added?1:change.removed?-1:0,ret.push([operation,change.value]);return ret},exports.convertChangesToXML=function(changes){var ret=[];for(let i=0;i<changes.length;i++){var change=changes[i];change.added?ret.push("<ins>"):change.removed&&ret.push("<del>"),ret.push((s=>{let n=s;return n=(n=(n=(n=n.replace(/&/g,"&amp;")).replace(/</g,"&lt;")).replace(/>/g,"&gt;")).replace(/"/g,"&quot;")})(change.value)),change.added?ret.push("</ins>"):change.removed&&ret.push("</del>")}return ret.join("")},exports.createPatch=function(fileName,oldStr,newStr,oldHeader,newHeader,options){return createTwoFilesPatch(fileName,fileName,oldStr,newStr,oldHeader,newHeader,options)},exports.createTwoFilesPatch=createTwoFilesPatch,exports.cssDiff=cssDiff,exports.diffArrays=function(oldArr,newArr,options){return arrayDiff.diff(oldArr,newArr,options)},exports.diffChars=function(oldStr,newStr,options){return characterDiff.diff(oldStr,newStr,options)},exports.diffCss=function(oldStr,newStr,options){return cssDiff.diff(oldStr,newStr,options)},exports.diffJson=function(oldStr,newStr,options){return jsonDiff.diff(oldStr,newStr,options)},exports.diffLines=diffLines,exports.diffSentences=function(oldStr,newStr,options){return sentenceDiff.diff(oldStr,newStr,options)},exports.diffTrimmedLines=function(oldStr,newStr,options){return options=((options,defaults)=>{if("function"==typeof options)defaults.callback=options;else if(options)for(var name in options)Object.prototype.hasOwnProperty.call(options,name)&&(defaults[name]=options[name]);return defaults})(options,{ignoreWhitespace:!0}),lineDiff.diff(oldStr,newStr,options)},exports.diffWords=function(oldStr,newStr,options){return null==(null==options?void 0:options.ignoreWhitespace)||options.ignoreWhitespace?wordDiff.diff(oldStr,newStr,options):diffWordsWithSpace(oldStr,newStr,options)},exports.diffWordsWithSpace=diffWordsWithSpace,exports.formatPatch=formatPatch,exports.jsonDiff=jsonDiff,exports.lineDiff=lineDiff,exports.parsePatch=parsePatch,exports.reversePatch=function reversePatch(structuredPatch){return Array.isArray(structuredPatch)?structuredPatch.map(patch=>reversePatch(patch)).reverse():Object.assign(Object.assign({},structuredPatch),{oldFileName:structuredPatch.newFileName,oldHeader:structuredPatch.newHeader,newFileName:structuredPatch.oldFileName,newHeader:structuredPatch.oldHeader,hunks:structuredPatch.hunks.map(hunk=>({oldLines:hunk.newLines,oldStart:hunk.newStart,newLines:hunk.oldLines,newStart:hunk.oldStart,lines:hunk.lines.map(l=>l.startsWith("-")?"+"+l.slice(1):l.startsWith("+")?"-"+l.slice(1):l)}))})},exports.sentenceDiff=sentenceDiff,exports.structuredPatch=structuredPatch,exports.wordDiff=wordDiff,exports.wordsWithSpaceDiff=wordsWithSpaceDiff});</script>
 <script type="module">/**
@@ -589,7 +607,103 @@ const labelType = {missing:'Texto ausente',changed:'Texto modificado',added:'Tex
 const normalize = s => s.normalize('NFKC').replace(/\u00ad/g,'').replace(/\s+/g,' ').trim();
 const escapeHTML = s => String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const delayPaint = () => new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));
-const exampleFiles = {"original": "JVBERi0xLjMKJZOMi54gUmVwb3J0TGFiIEdlbmVyYXRlZCBQREYgZG9jdW1lbnQgKG9wZW5zb3VyY2UpCjEgMCBvYmoKPDwKL0YxIDIgMCBSIC9GMiAzIDAgUgo+PgplbmRvYmoKMiAwIG9iago8PAovQmFzZUZvbnQgL0hlbHZldGljYSAvRW5jb2RpbmcgL1dpbkFuc2lFbmNvZGluZyAvTmFtZSAvRjEgL1N1YnR5cGUgL1R5cGUxIC9UeXBlIC9Gb250Cj4+CmVuZG9iagozIDAgb2JqCjw8Ci9CYXNlRm9udCAvSGVsdmV0aWNhLUJvbGQgL0VuY29kaW5nIC9XaW5BbnNpRW5jb2RpbmcgL05hbWUgL0YyIC9TdWJ0eXBlIC9UeXBlMSAvVHlwZSAvRm9udAo+PgplbmRvYmoKNCAwIG9iago8PAovQ29udGVudHMgMTUgMCBSIC9NZWRpYUJveCBbIDAgMCA1OTUuMjc1NiA4NDEuODg5OCBdIC9QYXJlbnQgMTQgMCBSIC9SZXNvdXJjZXMgPDwKL0ZvbnQgMSAwIFIgL1Byb2NTZXQgWyAvUERGIC9UZXh0IC9JbWFnZUIgL0ltYWdlQyAvSW1hZ2VJIF0KPj4gL1JvdGF0ZSAwIC9UcmFucyA8PAoKPj4gCiAgL1R5cGUgL1BhZ2UKPj4KZW5kb2JqCjUgMCBvYmoKPDwKL0NvbnRlbnRzIDE2IDAgUiAvTWVkaWFCb3ggWyAwIDAgNTk1LjI3NTYgODQxLjg4OTggXSAvUGFyZW50IDE0IDAgUiAvUmVzb3VyY2VzIDw8Ci9Gb250IDEgMCBSIC9Qcm9jU2V0IFsgL1BERiAvVGV4dCAvSW1hZ2VCIC9JbWFnZUMgL0ltYWdlSSBdCj4+IC9Sb3RhdGUgMCAvVHJhbnMgPDwKCj4+IAogIC9UeXBlIC9QYWdlCj4+CmVuZG9iago2IDAgb2JqCjw8Ci9Db250ZW50cyAxNyAwIFIgL01lZGlhQm94IFsgMCAwIDU5NS4yNzU2IDg0MS44ODk4IF0gL1BhcmVudCAxNCAwIFIgL1Jlc291cmNlcyA8PAovRm9udCAxIDAgUiAvUHJvY1NldCBbIC9QREYgL1RleHQgL0ltYWdlQiAvSW1hZ2VDIC9JbWFnZUkgXQo+PiAvUm90YXRlIDAgL1RyYW5zIDw8Cgo+PiAKICAvVHlwZSAvUGFnZQo+PgplbmRvYmoKNyAwIG9iago8PAovQ29udGVudHMgMTggMCBSIC9NZWRpYUJveCBbIDAgMCA1OTUuMjc1NiA4NDEuODg5OCBdIC9QYXJlbnQgMTQgMCBSIC9SZXNvdXJjZXMgPDwKL0ZvbnQgMSAwIFIgL1Byb2NTZXQgWyAvUERGIC9UZXh0IC9JbWFnZUIgL0ltYWdlQyAvSW1hZ2VJIF0KPj4gL1JvdGF0ZSAwIC9UcmFucyA8PAoKPj4gCiAgL1R5cGUgL1BhZ2UKPj4KZW5kb2JqCjggMCBvYmoKPDwKL0NvbnRlbnRzIDE5IDAgUiAvTWVkaWFCb3ggWyAwIDAgNTk1LjI3NTYgODQxLjg4OTggXSAvUGFyZW50IDE0IDAgUiAvUmVzb3VyY2VzIDw8Ci9Gb250IDEgMCBSIC9Qcm9jU2V0IFsgL1BERiAvVGV4dCAvSW1hZ2VCIC9JbWFnZUMgL0ltYWdlSSBdCj4+IC9Sb3RhdGUgMCAvVHJhbnMgPDwKCj4+IAogIC9UeXBlIC9QYWdlCj4+CmVuZG9iago5IDAgb2JqCjw8Ci9Db250ZW50cyAyMCAwIFIgL01lZGlhQm94IFsgMCAwIDU5NS4yNzU2IDg0MS44ODk4IF0gL1BhcmVudCAxNCAwIFIgL1Jlc291cmNlcyA8PAovRm9udCAxIDAgUiAvUHJvY1NldCBbIC9QREYgL1RleHQgL0ltYWdlQiAvSW1hZ2VDIC9JbWFnZUkgXQo+PiAvUm90YXRlIDAgL1RyYW5zIDw8Cgo+PiAKICAvVHlwZSAvUGFnZQo+PgplbmRvYmoKMTAgMCBvYmoKPDwKL0NvbnRlbnRzIDIxIDAgUiAvTWVkaWFCb3ggWyAwIDAgNTk1LjI3NTYgODQxLjg4OTggXSAvUGFyZW50IDE0IDAgUiAvUmVzb3VyY2VzIDw8Ci9Gb250IDEgMCBSIC9Qcm9jU2V0IFsgL1BERiAvVGV4dCAvSW1hZ2VCIC9JbWFnZUMgL0ltYWdlSSBdCj4+IC9Sb3RhdGUgMCAvVHJhbnMgPDwKCj4+IAogIC9UeXBlIC9QYWdlCj4+CmVuZG9iagoxMSAwIG9iago8PAovQ29udGVudHMgMjIgMCBSIC9NZWRpYUJveCBbIDAgMCA1OTUuMjc1NiA4NDEuODg5OCBdIC9QYXJlbnQgMTQgMCBSIC9SZXNvdXJjZXMgPDwKL0ZvbnQgMSAwIFIgL1Byb2NTZXQgWyAvUERGIC9UZXh0IC9JbWFnZUIgL0ltYWdlQyAvSW1hZ2VJIF0KPj4gL1JvdGF0ZSAwIC9UcmFucyA8PAoKPj4gCiAgL1R5cGUgL1BhZ2UKPj4KZW5kb2JqCjEyIDAgb2JqCjw8Ci9QYWdlTW9kZSAvVXNlTm9uZSAvUGFnZXMgMTQgMCBSIC9UeXBlIC9DYXRhbG9nCj4+CmVuZG9iagoxMyAwIG9iago8PAovQXV0aG9yIChhbm9ueW1vdXMpIC9DcmVhdGlvbkRhdGUgKEQ6MjAwMDAxMDEwMDAwMDArMDAnMDAnKSAvQ3JlYXRvciAoYW5vbnltb3VzKSAvS2V5d29yZHMgKCkgL01vZERhdGUgKEQ6MjAwMDAxMDEwMDAwMDArMDAnMDAnKSAvUHJvZHVjZXIgKFJlcG9ydExhYiBQREYgTGlicmFyeSAtIFwob3BlbnNvdXJjZVwpKSAKICAvU3ViamVjdCAodW5zcGVjaWZpZWQpIC9UaXRsZSAoQ29udHJhdG8gZmljdGljaW8gLSBvcmlnaW5hbCkgL1RyYXBwZWQgL0ZhbHNlCj4+CmVuZG9iagoxNCAwIG9iago8PAovQ291bnQgOCAvS2lkcyBbIDQgMCBSIDUgMCBSIDYgMCBSIDcgMCBSIDggMCBSIDkgMCBSIDEwIDAgUiAxMSAwIFIgXSAvVHlwZSAvUGFnZXMKPj4KZW5kb2JqCjE1IDAgb2JqCjw8Ci9GaWx0ZXIgWyAvQVNDSUk4NURlY29kZSAvRmxhdGVEZWNvZGUgXSAvTGVuZ3RoIDY4Mgo+PgpzdHJlYW0KR2FzMVw/I1EydCY6RGctZloxRXVjNWFoR2lRXFc1YV0wIUVKYF9CM19kODg1Nk8wRSVlSzxcXl9iKFMiWiZCLE5CNGJhZ3BFVzApT2w8ZSEhNE9zXl4uT0pBaj5HIkgsYG1NMkQxMzVoKSEnLSpZblplWlwzKlw4OTNCdDtPREZXdWhWW0xXWCpiR0kvUypWVlZxbFsuY2VvPGVuK1BAUSdbTnRYODpIPGsiU25CI0cjamtvRlhsREZnJWNUPiljRVA3LjtYLm08LzdcQC5HWmx0MTloSl1pOVtkSlEkIk5kYXVyWnBbWSdSZmo3Wl4pZkFuW25qQU5lLTMydGMzaTVwPyxwQzEoL1xlZC06WWNXJl1KbVkxNVhWZkxDT3JfJHNyWzBjIlouKy5dVkEnRWpsJmhtUTRaNGJlYT5QJE9MbltHVVNNZEU2Y1dGXTEla1xcKkolPEBiYlFJSSRAcWJAVW5DLUJKQ1JJWGcmVU5tZEBndGMsYiUiZ1xSXyFRcypaaF5BOEdMUz9NKyMsbSpMJXVaZGtlJT4rSGREUFxBSlw2LCk+P2RXTFYkaD9sdWAjKDFWLG0hcSw8QD9bPEgzJEpeRFtuQFxmV04xZiZkXXNGS3MlTUNhKWE3Z2VvZT5VXzpWYi9HO1pKR1JHMmxRKklvam1GZj5lbydeUl05MWI2UFdYOSY4NzJxYCZEPVVGXGlSLU8sP1ZKU0s/c2hacygjdU4tSD1JTTdPaDIwI1RgNWlzW0lBSGxGJkoncFc5WUhVbCVfZCRKMEg3MF9SbmpCLUNyIidiPlNnSGNeMz0yYExCcnQhT1AzKEsqNV4zYmxQWlFRcmRqZTBOQGVsOz8sQmBYWGBBJlFvbFlJLVhZPEtHOV8lLmpGcCprOyVTXVwjJ1Z+PmVuZHN0cmVhbQplbmRvYmoKMTYgMCBvYmoKPDwKL0ZpbHRlciBbIC9BU0NJSTg1RGVjb2RlIC9GbGF0ZURlY29kZSBdIC9MZW5ndGggMjY2Cj4+CnN0cmVhbQpHYXJXMV8rTVUxJjtLWSVNWjlWPFhJWDQuZVFcTVwrPFtlSjRhOCFWPklvdS5fQnAiRkhUKzZ0SmRhRkRoW0pDPD1KVlsqXGQkZWpnX0J0P1lVPDhFMT4kNFY0LkVfYVhbZk5jaD5fTmw8Yix1LjQ+KCJcZ2hjXUhvb1JQR15mMnM2MDhoVUNqUTBmZ1dhIiwiZl9MUmFBXlFhTTw7TSlXbEhyYDtHQHAlZEU6KC9YKl8wUzRwW0tLPCtTXlZScCxLNFduJ19UVkY6bmhecm9STDM9MCJwKSc2ZS88M3NcVHQlQVExXlAkNjRQQTk6XSozMjEjVEk+bHM3b1o+XVtiZT0ncGkpRzR+PmVuZHN0cmVhbQplbmRvYmoKMTcgMCBvYmoKPDwKL0ZpbHRlciBbIC9BU0NJSTg1RGVjb2RlIC9GbGF0ZURlY29kZSBdIC9MZW5ndGggMjY2Cj4+CnN0cmVhbQpHYXJXcTsrbmVcJ0YhRmhySkwzRjUvYzlZZSo1VzxWLDM3SkJISGtuYnFiVTRwNk4mbXJkMyo8M15IKSEzOzt0YV9FOGotP0lvL3JNdS8paylZTzxWPCFONCRAcVNgQzYpdWBsVWBPdStxQmlLXypoVlQhJTtzYFlGNGBpaUNMRi9EUEYiXytZT2NlTDFZIilEIm5xQik5TzBKdC9YNjdsOVFyPU9pNkk7IzFVcVZgM2ZnJj5kSk5cTj5TKTsiOFVER2xYbWFeRV1sWGtsWVEiNiRcXWEqUURUMDpKXilbP1NpLl9oP1cyKDJOKiNXJUgyaWFnU0ItLz9XK2A2ZVhNOmlcYT1CJ2t+PmVuZHN0cmVhbQplbmRvYmoKMTggMCBvYmoKPDwKL0ZpbHRlciBbIC9BU0NJSTg1RGVjb2RlIC9GbGF0ZURlY29kZSBdIC9MZW5ndGggMjY2Cj4+CnN0cmVhbQpHYXJXcTsvPSQmJ0YhRT1KJlFdZ3A1alE4aC9tUj07XmRHM1JLbTMnMGstc0cvU1Ivcl5HZGBTRiJmcEkzOzt0YV9ERTtQP1ghVkpLQkphaSQtWDlPV1lCJVFEJ2liYUovMU1ET0YkYElsJ2szW0dbNCdRQy04U0BxUVMhSylcJCllbGBBMGNDbT5iNFNMdSFtWHRXWDlCJ2M3c0NTbTlwYyQwSUxwXClIcGhuWU49YF1CVnBMIUdCSkRuWSc6PGdxTSxELVJsSWtiT0tqNDgkKU9jQ045T0ZzSF5VRyJqVkxIZVQnXTY3SjFtamhQUF4qJydbJD5bLlA+cW1hY0ItNzFaa2NyPll+PmVuZHN0cmVhbQplbmRvYmoKMTkgMCBvYmoKPDwKL0ZpbHRlciBbIC9BU0NJSTg1RGVjb2RlIC9GbGF0ZURlY29kZSBdIC9MZW5ndGggMjY2Cj4+CnN0cmVhbQpHYXJXcTsrbmVcJ0YhRmhySkw0MXAoMkZgWDQrUTJWLC8idWNvaClMYnFiVTRwNk4nIXI6YGpCa1FEMXVpUztWIyNnN0krSD5OYnMpVmMsMzhtbVtQPDJEOVFCSlouSyJMSyo9S1tmJSM6PlxJTl9VSiloVlNWKTdWci41PlotZ3FLUydLM09iaCUtTmhzImtjRiwhaXFSJ0RSSFhwOjZpRG9PbC1Lc3JGIXAmX0JLXCg5TnJDQGotK0hLdGBBWWdPVDREc1I2WjY4K21fXzVZMXQyZj1wVWxwZz88RVU9bC5IOTcoOTY3JyU0ajFzbDFIdU0/cTM0VFUxblNzYjI6IUJiXTg1dDx+PmVuZHN0cmVhbQplbmRvYmoKMjAgMCBvYmoKPDwKL0ZpbHRlciBbIC9BU0NJSTg1RGVjb2RlIC9GbGF0ZURlY29kZSBdIC9MZW5ndGggMjY3Cj4+CnN0cmVhbQpHYXJXcTsrbmVcJ0YhRmhySkwzRkhcZjo+NC9bIyc5OypKdGNvZ1tmUlVuJXVwNk4nKXEhVXE4a1FEMXVpUztWIyNgRXFASD5OYnMoZCZLODhta0RlPDJEOlBjdDUydCQidUthJCl1SG46PlxJTmBvR01MVlNWKSNWW24sYmZQOVg4OiQ2KGJrKnMkPW1yV1tfbylVWkkwazIibz50XklcRG9PbC1Lc3ReN2w1PGkyRFFVaChlYF47S0hLdGEsWWdPVDVEc1I2WjY4K21fXzVZMXQyZj1wVWxyTkpMRVU9bC5HcnB0ODY3JyU0ajFzbDFdUTY/XzM0ZmEzblNzYjI6IUM8T0ZNTGszfj5lbmRzdHJlYW0KZW5kb2JqCjIxIDAgb2JqCjw8Ci9GaWx0ZXIgWyAvQVNDSUk4NURlY29kZSAvRmxhdGVEZWNvZGUgXSAvTGVuZ3RoIDI2Nwo+PgpzdHJlYW0KR2FyV3FjImItTSYtVXA8U21tXk8lU0c7cEliSiNrYUMkRGZfKWg1Ijw+OzA4SF1AQStxWSQxS0JpP0VINkhoKD4mPTJrNXB0P1gyMkhdI0M4bW9yOzwyRDklY3Q1JnEkInVFXSQqIVQ5Oj5cSU5gVEQuSDtlKkMja2RNZWZmUEJeQTxHK2EsQUBucCYqY3NEcFxcY1I/YmgsP29mN1FdcDJyYnEmZ3ROM0hvKXUzSTJxSHNLLldkOmpHaj5PKllnVCVyRHJcRGc2NzhtZ2hQbjg8R09CMydaP3JqY2csNlMlbHRucmUkRGdeUlEzM2xrbyQuN05qNU5EYGc7Y3ElMl9rKzBGdVdIWX4+ZW5kc3RyZWFtCmVuZG9iagoyMiAwIG9iago8PAovRmlsdGVyIFsgL0FTQ0lJODVEZWNvZGUgL0ZsYXRlRGVjb2RlIF0gL0xlbmd0aCAyNjcKPj4Kc3RyZWFtCkdhcldxOytuZVwnRiFGaHJKTDNGSFxmOj5rO3FMNFFVM3RyVG0+O1Y/J19gZGdLVylVcSFVcThrUUQxdWlTO1YjI2BFcUBIPk5hSClhImY7OG1qOUU8MkQ5JWN0NTJ0I3EtYmFLW2YlIzo+XEkuQEQsZ1oxcTs8LnAkbVBpRnJJcjxlVGs7XnEpMGw6SFg1SUZdWVZnQWJoLD9fZjI8cHBTKzJNTmlVKW5tNGI3Q2xYYFpWOClTSE0jaEttIWNYTC4wXGdVXVMvY3E+YHBFOV9CIU5PckBnbHFabm9qNFplPG5UR2BNS2g/KUdhKztWQTNINz0vXEBONl1uU3NiMjohQzxPR0hiJip+PmVuZHN0cmVhbQplbmRvYmoKeHJlZgowIDIzCjAwMDAwMDAwMDAgNjU1MzUgZiAKMDAwMDAwMDA2MSAwMDAwMCBuIAowMDAwMDAwMTAyIDAwMDAwIG4gCjAwMDAwMDAyMDkgMDAwMDAgbiAKMDAwMDAwMDMyMSAwMDAwMCBuIAowMDAwMDAwNTI2IDAwMDAwIG4gCjAwMDAwMDA3MzEgMDAwMDAgbiAKMDAwMDAwMDkzNiAwMDAwMCBuIAowMDAwMDAxMTQxIDAwMDAwIG4gCjAwMDAwMDEzNDYgMDAwMDAgbiAKMDAwMDAwMTU1MSAwMDAwMCBuIAowMDAwMDAxNzU3IDAwMDAwIG4gCjAwMDAwMDE5NjMgMDAwMDAgbiAKMDAwMDAwMjAzMyAwMDAwMCBuIAowMDAwMDAyMzE1IDAwMDAwIG4gCjAwMDAwMDI0MTkgMDAwMDAgbiAKMDAwMDAwMzE5MiAwMDAwMCBuIAowMDAwMDAzNTQ5IDAwMDAwIG4gCjAwMDAwMDM5MDYgMDAwMDAgbiAKMDAwMDAwNDI2MyAwMDAwMCBuIAowMDAwMDA0NjIwIDAwMDAwIG4gCjAwMDAwMDQ5NzggMDAwMDAgbiAKMDAwMDAwNTMzNiAwMDAwMCBuIAp0cmFpbGVyCjw8Ci9JRCAKWzxkOWNmM2Q3MDdkMmIwZTQ4ZGUzZTdiOWRlYjk4Mjg3ZD48ZDljZjNkNzA3ZDJiMGU0OGRlM2U3YjlkZWI5ODI4N2Q+XQolIFJlcG9ydExhYiBnZW5lcmF0ZWQgUERGIGRvY3VtZW50IC0tIGRpZ2VzdCAob3BlbnNvdXJjZSkKCi9JbmZvIDEzIDAgUgovUm9vdCAxMiAwIFIKL1NpemUgMjMKPj4Kc3RhcnR4cmVmCjU2OTQKJSVFT0YK", "received": "JVBERi0xLjMKJZOMi54gUmVwb3J0TGFiIEdlbmVyYXRlZCBQREYgZG9jdW1lbnQgKG9wZW5zb3VyY2UpCjEgMCBvYmoKPDwKL0YxIDIgMCBSIC9GMiAzIDAgUgo+PgplbmRvYmoKMiAwIG9iago8PAovQmFzZUZvbnQgL0hlbHZldGljYSAvRW5jb2RpbmcgL1dpbkFuc2lFbmNvZGluZyAvTmFtZSAvRjEgL1N1YnR5cGUgL1R5cGUxIC9UeXBlIC9Gb250Cj4+CmVuZG9iagozIDAgb2JqCjw8Ci9CYXNlRm9udCAvSGVsdmV0aWNhLUJvbGQgL0VuY29kaW5nIC9XaW5BbnNpRW5jb2RpbmcgL05hbWUgL0YyIC9TdWJ0eXBlIC9UeXBlMSAvVHlwZSAvRm9udAo+PgplbmRvYmoKNCAwIG9iago8PAovQ29udGVudHMgMTUgMCBSIC9NZWRpYUJveCBbIDAgMCA1OTUuMjc1NiA4NDEuODg5OCBdIC9QYXJlbnQgMTQgMCBSIC9SZXNvdXJjZXMgPDwKL0ZvbnQgMSAwIFIgL1Byb2NTZXQgWyAvUERGIC9UZXh0IC9JbWFnZUIgL0ltYWdlQyAvSW1hZ2VJIF0KPj4gL1JvdGF0ZSAwIC9UcmFucyA8PAoKPj4gCiAgL1R5cGUgL1BhZ2UKPj4KZW5kb2JqCjUgMCBvYmoKPDwKL0NvbnRlbnRzIDE2IDAgUiAvTWVkaWFCb3ggWyAwIDAgNTk1LjI3NTYgODQxLjg4OTggXSAvUGFyZW50IDE0IDAgUiAvUmVzb3VyY2VzIDw8Ci9Gb250IDEgMCBSIC9Qcm9jU2V0IFsgL1BERiAvVGV4dCAvSW1hZ2VCIC9JbWFnZUMgL0ltYWdlSSBdCj4+IC9Sb3RhdGUgMCAvVHJhbnMgPDwKCj4+IAogIC9UeXBlIC9QYWdlCj4+CmVuZG9iago2IDAgb2JqCjw8Ci9Db250ZW50cyAxNyAwIFIgL01lZGlhQm94IFsgMCAwIDU5NS4yNzU2IDg0MS44ODk4IF0gL1BhcmVudCAxNCAwIFIgL1Jlc291cmNlcyA8PAovRm9udCAxIDAgUiAvUHJvY1NldCBbIC9QREYgL1RleHQgL0ltYWdlQiAvSW1hZ2VDIC9JbWFnZUkgXQo+PiAvUm90YXRlIDAgL1RyYW5zIDw8Cgo+PiAKICAvVHlwZSAvUGFnZQo+PgplbmRvYmoKNyAwIG9iago8PAovQ29udGVudHMgMTggMCBSIC9NZWRpYUJveCBbIDAgMCA1OTUuMjc1NiA4NDEuODg5OCBdIC9QYXJlbnQgMTQgMCBSIC9SZXNvdXJjZXMgPDwKL0ZvbnQgMSAwIFIgL1Byb2NTZXQgWyAvUERGIC9UZXh0IC9JbWFnZUIgL0ltYWdlQyAvSW1hZ2VJIF0KPj4gL1JvdGF0ZSAwIC9UcmFucyA8PAoKPj4gCiAgL1R5cGUgL1BhZ2UKPj4KZW5kb2JqCjggMCBvYmoKPDwKL0NvbnRlbnRzIDE5IDAgUiAvTWVkaWFCb3ggWyAwIDAgNTk1LjI3NTYgODQxLjg4OTggXSAvUGFyZW50IDE0IDAgUiAvUmVzb3VyY2VzIDw8Ci9Gb250IDEgMCBSIC9Qcm9jU2V0IFsgL1BERiAvVGV4dCAvSW1hZ2VCIC9JbWFnZUMgL0ltYWdlSSBdCj4+IC9Sb3RhdGUgMCAvVHJhbnMgPDwKCj4+IAogIC9UeXBlIC9QYWdlCj4+CmVuZG9iago5IDAgb2JqCjw8Ci9Db250ZW50cyAyMCAwIFIgL01lZGlhQm94IFsgMCAwIDU5NS4yNzU2IDg0MS44ODk4IF0gL1BhcmVudCAxNCAwIFIgL1Jlc291cmNlcyA8PAovRm9udCAxIDAgUiAvUHJvY1NldCBbIC9QREYgL1RleHQgL0ltYWdlQiAvSW1hZ2VDIC9JbWFnZUkgXQo+PiAvUm90YXRlIDAgL1RyYW5zIDw8Cgo+PiAKICAvVHlwZSAvUGFnZQo+PgplbmRvYmoKMTAgMCBvYmoKPDwKL0NvbnRlbnRzIDIxIDAgUiAvTWVkaWFCb3ggWyAwIDAgNTk1LjI3NTYgODQxLjg4OTggXSAvUGFyZW50IDE0IDAgUiAvUmVzb3VyY2VzIDw8Ci9Gb250IDEgMCBSIC9Qcm9jU2V0IFsgL1BERiAvVGV4dCAvSW1hZ2VCIC9JbWFnZUMgL0ltYWdlSSBdCj4+IC9Sb3RhdGUgMCAvVHJhbnMgPDwKCj4+IAogIC9UeXBlIC9QYWdlCj4+CmVuZG9iagoxMSAwIG9iago8PAovQ29udGVudHMgMjIgMCBSIC9NZWRpYUJveCBbIDAgMCA1OTUuMjc1NiA4NDEuODg5OCBdIC9QYXJlbnQgMTQgMCBSIC9SZXNvdXJjZXMgPDwKL0ZvbnQgMSAwIFIgL1Byb2NTZXQgWyAvUERGIC9UZXh0IC9JbWFnZUIgL0ltYWdlQyAvSW1hZ2VJIF0KPj4gL1JvdGF0ZSAwIC9UcmFucyA8PAoKPj4gCiAgL1R5cGUgL1BhZ2UKPj4KZW5kb2JqCjEyIDAgb2JqCjw8Ci9QYWdlTW9kZSAvVXNlTm9uZSAvUGFnZXMgMTQgMCBSIC9UeXBlIC9DYXRhbG9nCj4+CmVuZG9iagoxMyAwIG9iago8PAovQXV0aG9yIChhbm9ueW1vdXMpIC9DcmVhdGlvbkRhdGUgKEQ6MjAwMDAxMDEwMDAwMDArMDAnMDAnKSAvQ3JlYXRvciAoYW5vbnltb3VzKSAvS2V5d29yZHMgKCkgL01vZERhdGUgKEQ6MjAwMDAxMDEwMDAwMDArMDAnMDAnKSAvUHJvZHVjZXIgKFJlcG9ydExhYiBQREYgTGlicmFyeSAtIFwob3BlbnNvdXJjZVwpKSAKICAvU3ViamVjdCAodW5zcGVjaWZpZWQpIC9UaXRsZSAoQ29udHJhdG8gZmljdGljaW8gLSByZWNpYmlkbykgL1RyYXBwZWQgL0ZhbHNlCj4+CmVuZG9iagoxNCAwIG9iago8PAovQ291bnQgOCAvS2lkcyBbIDQgMCBSIDUgMCBSIDYgMCBSIDcgMCBSIDggMCBSIDkgMCBSIDEwIDAgUiAxMSAwIFIgXSAvVHlwZSAvUGFnZXMKPj4KZW5kb2JqCjE1IDAgb2JqCjw8Ci9GaWx0ZXIgWyAvQVNDSUk4NURlY29kZSAvRmxhdGVEZWNvZGUgXSAvTGVuZ3RoIDcxNAo+PgpzdHJlYW0KR2FzMkc/I1EyZCdTYylSLydkNjdXPUM5OVVZTjdLMkokJ10uXjdkJV5uR24pRC5IPjs6JkZIQjJHcHJfRCVyL2tmQzU9KUhycl9QKnVUUFklPCw3X2pLZXVXNko2bjU2akRhM2ZUWzFMOkktVWNTazphO1gzMi8jPkpmQUxKUHNDQGVhQlRxP15FaVZEa1BiTCsxQTY7WSg1RUJdXFFrajhOT1VbJyk8LV5CLi0hWGNvSitiOzVZVWRTJV9FPEk4Ojs0MTZrMikjb19uXmpzLklpSV5zZmJyWU5FLkJXdEtJNFFXZnBTWUk2N28xWmAyL0pSMkpecUknRVU+ITB1JD9BWDouR01iL29YT2lgPlw0UiMibWNgRmpEPkEtbVpIQmNfLnJ1TyRPYl1sazZaVGg3XmNjaiVbUUlrZWJDNk1rbCI/TGpdTF9HXmZITDlEYHROaEhuWCVuJzlPUHNKNlFmZipmR106KydeVzgrI3VeNmspaGRmMTo2ZyxxV1tMM0YuIkNQLmgoOV1lbG1gXVdpJkI4WG5rdFI1b3NPLCNwST5RQWNhJSdAcixcKVUvREFVU0ZGS2JaQEY9YGlXWDBLLVNnXDhxcGE7LkQhYktDYiprZk0mX3NCKWxeVmhiUy0+NzlzLiZjUzguSj9KWCVbI0tJVVwnXlgzJCc+PVM3JnNxT2smVlBLNTlvKW5sbVFGYD1AYTxBZGgwNCo7QUtbTipUKD1yREZbVks5XEApVkBxaWdeSV5xXi9kP0FCN2U0MGVPb3BpSWY9UywsJDFWSGBdTjdEa206Vk1FWDRYTFgzaUdAKyFxdFAzKytHZSZSMjFjP2xdSDVYVFxnXiM+UC90aThIKGpgS1FbRmpkUlc7Mk4qbVBbTWo2LWcuIygrSi0/WFE6SmhwdUUxbWcrNkhXKmIqNi5PSllGJzshIzdrJy8+bH4+ZW5kc3RyZWFtCmVuZG9iagoxNiAwIG9iago8PAovRmlsdGVyIFsgL0FTQ0lJODVEZWNvZGUgL0ZsYXRlRGVjb2RlIF0gL0xlbmd0aCAzMDEKPj4Kc3RyZWFtCkdhcnAlOytuZVwnRiFGaHJKTDNGX0owYEcydG81QjwhcT86YyVFNE8vN2pyJS47OU9wcEVpPU5KZUUpMUxXYW5ZT0c6WzhXSSFLJ2lqKXMiKjNvYWtPcHBuJjY4JURqSzVHKUM9YFhKKVpTKk5XQCIiNSpwLExmLGlqZlFIPzlnPy4rdG5qMGhyU0VUTTw1ZksoJVVBPSRzZF07XGs7YlRrKmpXWVBBW2VbPFovYj9VR11jYEQoJ1ktUVZEYSwvXm9zX1ZHRSVmLD5mOyMsaypDYTtlMi4nOmtxcEZHR0MsNyNGKVFNcHA+QCsqTVhSRFQ2MFktXTM8SkdoUG10amdXPi5WV0A3bFQpVjZ0WGo5XkhfMEJDTG1OblNqRjoiWjc/JzhvWlNkcS47fj5lbmRzdHJlYW0KZW5kb2JqCjE3IDAgb2JqCjw8Ci9GaWx0ZXIgWyAvQVNDSUk4NURlY29kZSAvRmxhdGVEZWNvZGUgXSAvTGVuZ3RoIDMwMgo+PgpzdHJlYW0KR2FycCU/VkE5aidGIiIjST5bV3BfSjU5V21hJ1lTO0NROUBDYFt1O2I+SyppUyEkZ2dEZjhOQS1SXi4pRTRHZ0AoaC8hSTFmWHE9OUFGK2ZOJ2wwKDhYKUooNkhJaUVGMEtmLjNLKjxTRXFWcElDVEtFS0E7ZEtvK15SY1tsaWZlIiY4QGB0a3E6Nig2PClRdVlFMV4jVlhJdG1mLTk0KFJrJFtqY2FxXCZHS0xJbClSWFE6RDEwNiEzTnIiL0BOTlNWMmduOW0paTJfOjFMW05sMjJYR2s0aypsZG1iSzokbkghNDU7ZzxKMyNUXFFiWFcpRVRZSWUlN20sImJPPGQxPjNeSlxQQSwjbCJVa2ZGRV9COTItIyZDL3VpQzVxLEg5LCJYLW47Xyk6fj5lbmRzdHJlYW0KZW5kb2JqCjE4IDAgb2JqCjw8Ci9GaWx0ZXIgWyAvQVNDSUk4NURlY29kZSAvRmxhdGVEZWNvZGUgXSAvTGVuZ3RoIDMwMgo+PgpzdHJlYW0KR2FycCU/VkE5aidGIiIjST5bV3BfSjdQQm1hJ1lTO0NROUBDYFt1O2I+SyppUlpeXmZEZjZPXi1SXi4pRTRHZ0AoaC50c1IqbCEvIWsxL2w5LT4uVzFlSm80XzhSdGQkLnNSSCcsS0YmalFxZHFmMnVtISNfVDBgYV42TUtZaWpzO0pTLkRYQUBucUE4bVlqbF1MKEQkUyVhZjdZIW5UUUQ2QiUwNS0lLjVlT2BJcC41XWByZ0E2RSFDMGhcZWpaSlJWRHUsWGRHOVYmWmNcLUJKQyplIiNIKVNdVGdxL20raVdJVlBWczJtNkBIblxHRHIlQGRKKTAzQVleN25YTjlXbXVJak4sQUxldWpXVSppSXBTTlctJzkvbkhiYUNyPVtRUjY9Om5rIUVOfj5lbmRzdHJlYW0KZW5kb2JqCjE5IDAgb2JqCjw8Ci9GaWx0ZXIgWyAvQVNDSUk4NURlY29kZSAvRmxhdGVEZWNvZGUgXSAvTGVuZ3RoIDMwMgo+PgpzdHJlYW0KR2FycCU7K25lXCdGIUZockpMM0ZfST9HSjJ0bzVCPCFxPzpjJUU0Ty83anIlLjs5T3BwU0xDN0tMczYyKiVwK1Q3aGNIKlZzOGVaTTxnW2FhLGdhVF9AanBbI2U/Pm8oam5MLjBrW3U5U0dzL0IpUVVJVVpHWFlpJ1gmNWFsaV1gVC9AJEhRWj5FV0FWNVEkamhdXTFQYy1YR21YckEuSzJjb05jXj9BJTVEM1o6MjImYkw6ZzRZJ1VDMDs+YGpZRF9nP2kjdW1HOVYoJiVZU3ArQyknbUoiNFVmLHJtTjpVbi0ucT9JWDUwXDlIQWNPU0tCYGRmMWpfXmgpWS9VQmZpb3EubEMnJTZnXCc0U2lpX0BtWXM+NF9FaU5FU0koZC1DMT9dQm9FOGFifj5lbmRzdHJlYW0KZW5kb2JqCjIwIDAgb2JqCjw8Ci9GaWx0ZXIgWyAvQVNDSUk4NURlY29kZSAvRmxhdGVEZWNvZGUgXSAvTGVuZ3RoIDMwMgo+PgpzdHJlYW0KR2FycCU7K25lXCdGIUZockpMM0ZfST9IdUQ9MjdhVz4pXVsyQG1OLlpdbW80VlBJNV1oalhodCN0aThiKiVwK1Q4KXQwaztnI21IYC0nQUFBJm5qOkAwdHVzS05zMG0jMmRYTWJoOzgvaz9nV19fPjYnQWx1OTNbYEgtX0lITj90YzZyckE7W2BhUS4nX05kNS8qLDZpbCs7MyhcbWItZGp1TyI3UEFbYlZdZVk4OTdVb1tuPkA2bCUvYU1FMT5YZj4qOXFOKnVjOXVSIk02UF1jPiItLVEqYm1FRXBNUTUjcGpmW0tFSVJWLVMzJzIlPT5zc2ZZRkREP2gtOVInbCRmcjs9KSswKUw+JydPIiQrNlZsakdoXEtUZ1M+M29gMGBnci8xY290UCkhfj5lbmRzdHJlYW0KZW5kb2JqCjIxIDAgb2JqCjw8Ci9GaWx0ZXIgWyAvQVNDSUk4NURlY29kZSAvRmxhdGVEZWNvZGUgXSAvTGVuZ3RoIDMwMgo+PgpzdHJlYW0KR2FycCU7K25lXCdGIUZockpMM0ZfST9IVUZtYSppVz4pXVsyQG1OLlpdbW80VlBJNV1oalhodCN0aThiKiVwK1Q4KXQwaztnI21IYC0nQUFBJm5qOkAwdHVzS05zMG0jMmRYTWJoO2g/az9nV182JGFKOUcuPzFpaWpsb0VITj90YzZyckE7W2BhUS4nX05kNS8qLDZpbCs7MyhcbWItZEFmOnBHOE41QWY/NV5VV1VHOHBIWFk0cSNRP0AxUy91KzcmVlUjUXVCLUs7IjZxRmVbPGAtJy1MS11Zal1jMU42NStsX0FTPWRKOWtEbXEiZWtNVjNsYE85PmgtOVInbCRmcjs9KSswKUw+JydPIiQrNlZsakdoXEtUZ1M+M29gMGBnci8xY3BOZ0U1fj5lbmRzdHJlYW0KZW5kb2JqCjIyIDAgb2JqCjw8Ci9GaWx0ZXIgWyAvQVNDSUk4NURlY29kZSAvRmxhdGVEZWNvZGUgXSAvTGVuZ3RoIDMwMgo+PgpzdHJlYW0KR2FycCU7K25lXCdGIUZockpMM0ZfST9HKj5QQyVmPCFxPzpjJUU0Ty83anIlLjs5T3BwU0xCJEplRSkxTFdhblkmVlwsaFdJIUsnaWouTSMwazpaYFlRWE08NkVaVjojMSlFb2szVnBsaz9nVz8raGBeVEhec0lRblFbPFg/OWc/Lit0bmowaHJTRVRNPDVmSyglVUE9JHNlOEZcbWszZUFmPD5iUEFbZVs8Wi9iP1VHXWNgRCgnWS1mMWdObFhlVV5QVkdFJWZCOy4qRjhCQTY0OjZBTzs1VE4+XWhpMEIkKyZMNihrLDZiaWdiSENWcSs3b0JoOUJQP3BKL0VwZy5qOXU4a2grV2QoJUEwK0FXaWVIUWVIMUU3RWBDRG8qaWxSVE90PnEpKWFJfj5lbmRzdHJlYW0KZW5kb2JqCnhyZWYKMCAyMwowMDAwMDAwMDAwIDY1NTM1IGYgCjAwMDAwMDAwNjEgMDAwMDAgbiAKMDAwMDAwMDEwMiAwMDAwMCBuIAowMDAwMDAwMjA5IDAwMDAwIG4gCjAwMDAwMDAzMjEgMDAwMDAgbiAKMDAwMDAwMDUyNiAwMDAwMCBuIAowMDAwMDAwNzMxIDAwMDAwIG4gCjAwMDAwMDA5MzYgMDAwMDAgbiAKMDAwMDAwMTE0MSAwMDAwMCBuIAowMDAwMDAxMzQ2IDAwMDAwIG4gCjAwMDAwMDE1NTEgMDAwMDAgbiAKMDAwMDAwMTc1NyAwMDAwMCBuIAowMDAwMDAxOTYzIDAwMDAwIG4gCjAwMDAwMDIwMzMgMDAwMDAgbiAKMDAwMDAwMjMxNSAwMDAwMCBuIAowMDAwMDAyNDE5IDAwMDAwIG4gCjAwMDAwMDMyMjQgMDAwMDAgbiAKMDAwMDAwMzYxNiAwMDAwMCBuIAowMDAwMDA0MDA5IDAwMDAwIG4gCjAwMDAwMDQ0MDIgMDAwMDAgbiAKMDAwMDAwNDc5NSAwMDAwMCBuIAowMDAwMDA1MTg4IDAwMDAwIG4gCjAwMDAwMDU1ODEgMDAwMDAgbiAKdHJhaWxlcgo8PAovSUQgCls8YWE5OTRlYzJkMzExZGU0MTMyODA1NjUzODU5NWU2NzY+PGFhOTk0ZWMyZDMxMWRlNDEzMjgwNTY1Mzg1OTVlNjc2Pl0KJSBSZXBvcnRMYWIgZ2VuZXJhdGVkIFBERiBkb2N1bWVudCAtLSBkaWdlc3QgKG9wZW5zb3VyY2UpCgovSW5mbyAxMyAwIFIKL1Jvb3QgMTIgMCBSCi9TaXplIDIzCj4+CnN0YXJ0eHJlZgo1OTc0CiUlRU9GCg=="};
+const exampleFiles = {"original": "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", "received": "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"};
+const docxMime='application/vnd.openxmlformats-officedocument.wordprocessingml.document';
+const maxXmlBytes=4*1024*1024;
+
+async function readDocxXml(file){
+ const archive=new DataView(await file.arrayBuffer());
+ const isSignature=(offset,signature)=>offset>=0&&offset+4<=archive.byteLength&&archive.getUint32(offset,true)===signature;
+ // Locate the ZIP central directory, including archives with a ZIP comment.
+ let end=archive.byteLength-22;
+ const floor=Math.max(0,end-65535);
+ while(end>=floor&&!(isSignature(end,0x06054b50)&&end+22+archive.getUint16(end+20,true)===archive.byteLength))end--;
+ if(end<floor||archive.getUint16(end+4,true)||archive.getUint16(end+6,true)){
+  throw new Error('El archivo no es un DOCX válido o está protegido.');
+ }
+ const directorySize=archive.getUint32(end+12,true);
+ const count=archive.getUint16(end+10,true);
+ let cursor=archive.getUint32(end+16,true);
+ const limit=cursor+directorySize;
+ if(limit>end||count===65535)throw new Error('El directorio del archivo DOCX no es válido.');
+ const decoder=new TextDecoder();
+ for(let index=0;index<count&&cursor+46<=limit;index++){
+  if(!isSignature(cursor,0x02014b50))break;
+  const nameLength=archive.getUint16(cursor+28,true);
+  const next=cursor+46+nameLength+archive.getUint16(cursor+30,true)+archive.getUint16(cursor+32,true);
+  if(next>limit)break;
+  const name=decoder.decode(new Uint8Array(archive.buffer,cursor+46,nameLength));
+  if(name==='word/document.xml'){
+   const flags=archive.getUint16(cursor+8,true);
+   const method=archive.getUint16(cursor+10,true);
+   const compressed=archive.getUint32(cursor+20,true);
+   const size=archive.getUint32(cursor+24,true);
+   const header=archive.getUint32(cursor+42,true);
+   if(flags&1)throw new Error('El DOCX está protegido con contraseña.');
+   if(size>maxXmlBytes)throw new Error('El DOCX contiene demasiado texto. Dividilo en secciones.');
+   if(header+30>limit||!isSignature(header,0x04034b50))break;
+   const start=header+30+archive.getUint16(header+26,true)+archive.getUint16(header+28,true);
+   if(start+compressed>end)break;
+   const bytes=new Uint8Array(archive.buffer,start,compressed);
+   if(method===0&&compressed===size)return decoder.decode(bytes);
+   if(method!==8)break;
+   const reader=new Blob([bytes]).stream().pipeThrough(new DecompressionStream('deflate-raw')).getReader();
+   const text=[];
+   let bytesRead=0;
+   try{
+    for(;;){
+     const {value,done}=await reader.read();
+     if(done)break;
+     bytesRead+=value.byteLength;
+     if(bytesRead>size||bytesRead>maxXmlBytes){
+      await reader.cancel();
+      throw new Error('El contenido del DOCX supera el tamaño indicado por el archivo.');
+     }
+     text.push(decoder.decode(value,{stream:true}));
+    }
+   }finally{reader.releaseLock();}
+   if(bytesRead!==size)break;
+   return text.join('')+decoder.decode();
+  }
+  cursor=next;
+ }
+ throw new Error('No se pudo leer el cuerpo del DOCX. Probá guardarlo nuevamente desde Word.');
+}
+
+function readWordParagraphs(xml){
+ if(/<!DOCTYPE/i.test(xml))throw new Error('El contenido XML del DOCX no es válido.');
+ const documentXml=new DOMParser().parseFromString(xml,'application/xml');
+ const namespace=documentXml.documentElement.namespaceURI;
+ const body=documentXml.getElementsByTagNameNS(namespace,'body')[0];
+ if(!namespace?.endsWith('/wordprocessingml/2006/main')&&!namespace?.endsWith('/wordprocessingml/main')){
+  throw new Error('No se pudo interpretar el texto del DOCX.');
+ }
+ if(!body)throw new Error('El DOCX no contiene un cuerpo de texto.');
+ const paragraphs=[];
+ const readText=(node,root)=>{
+  if(node.namespaceURI===namespace){
+   if(['del','moveFrom','pPr','rPr'].includes(node.localName))return '';
+   if(node.localName==='p'&&node!==root)return '';
+   if(node.localName==='t')return node.textContent;
+   if(['tab','br','cr'].includes(node.localName))return ' ';
+  }
+  return Array.from(node.children,child=>readText(child,root)).join('');
+ };
+ for(const paragraph of body.getElementsByTagNameNS(namespace,'p')){
+  const text=readText(paragraph,paragraph).trim();
+  if(text)paragraphs.push(text);
+ }
+ return paragraphs;
+}
+
+async function readDOCX(file){
+ const pages=readWordParagraphs(await readDocxXml(file));
+ const text=pages.join('\n\n');
+ if(!normalize(text))throw new Error('No se encontró texto en el cuerpo del DOCX.');
+ if(text.length>400000)throw new Error('El DOCX contiene demasiado texto. Dividilo en secciones.');
+ return {name:file.name,kind:'docx',pages,text,sparse:[]};
+}
+
 
 function notice(message='',error=false){$('alert').textContent=message;$('alert').hidden=!message;$('alert').classList.toggle('error',error);}
 let toastTimer;
@@ -597,11 +711,14 @@ function toast(message){$('toast').textContent=message;$('toast').hidden=false;c
 function setBusy(busy,message){state.busy=busy;$('compare').textContent=busy?(message||'Procesando…'):'Comparar contratos →';$('compare').disabled=busy||!$('text-original').value.trim()||!$('text-received').value.trim();$('demo').disabled=busy;for(const el of document.querySelectorAll('.dropzone input, details textarea, #ignore-case'))el.disabled=busy;$('app-status').textContent=busy?'Procesando en tu navegador':'Listo para comparar';}
 function markSteps(step){for(let i=1;i<=3;i++){const el=$('step-'+i);el.classList.toggle('current',i===step);el.classList.toggle('done',i<step);}}
 function invalidate(){
+ clearCapture();
  state.revision++;
  state.differences=[];
  state.draftRevision=-1;
  $('difference-list').replaceChildren();
  for(const id of ['draft-to','draft-subject','draft-body'])$(id).value='';
+ state.generatedBody='';
+ $('mail-transfer-status').textContent='';
  $('results').hidden=true;
  $('empty-state').hidden=false;
  $('draft-panel').hidden=true;
@@ -614,13 +731,37 @@ function markDraftStale(){
  $('draft-state').textContent='REGENERAR: CAMBIÓ LA REVISIÓN';
  $('draft-state').classList.add('draft-stale');
  $('open-mail').disabled=true;
+ $('copy-draft').disabled=true;
 }
 
+async function extractPdfPage(page){
+ const content=await page.getTextContent();
+ let text='';
+ let previous=null;
+ for(const item of content.items){
+  if(typeof item.str!=='string')continue;
+  if(previous&&text&&!/\s$/.test(text)&&!/^\s/.test(item.str)){
+   const newLine=Math.abs(item.transform[5]-previous.transform[5])>Math.max(2,Math.abs(item.transform[3])*.5);
+   const gap=item.transform[4]-previous.transform[4]-previous.width;
+   if(newLine)text+='\n';
+   else if(gap>Math.max(.5,Math.abs(item.transform[0])*.08))text+=' ';
+  }
+  text+=item.str;
+  if(item.hasEOL)text+='\n';
+  previous=item;
+ }
+ const annotations=await page.getAnnotations({intent:'display'});
+ const fields=annotations.filter(a=>a.subtype==='Widget'&&a.fieldType!=='Sig'&&a.fieldName&&a.fieldValue!==undefined&&a.fieldValue!==null&&String(a.fieldValue)!=='');
+ if(fields.length)text+='\n'+fields.map(a=>`[${a.fieldName}]: ${Array.isArray(a.fieldValue)?a.fieldValue.join(', '):a.fieldValue}`).join('\n');
+ return {text:text.trim(),items:content.items};
+}
+
+async function pdfTask(file){
+ const data=new Uint8Array(await file.arrayBuffer());
+ return pdfjsLib.getDocument({data,isEvalSupported:false,useSystemFonts:true,stopAtErrors:true,disableFontFace:true,useWasm:false,useWorkerFetch:false,verbosity:0});
+}
 async function readPDF(file){
- if(file.size>15*1024*1024)throw new Error('El archivo supera los 15 MB. Usá un PDF más pequeño.');
- if(!file.name.toLowerCase().endsWith('.pdf')&&file.type!=='application/pdf')throw new Error('Seleccioná un archivo PDF.');
- const bytes=new Uint8Array(await file.arrayBuffer());
- const task=pdfjsLib.getDocument({data:bytes,isEvalSupported:false,useSystemFonts:true,stopAtErrors:true,disableFontFace:true,useWasm:false,useWorkerFetch:false,verbosity:0});
+ const task=await pdfTask(file);
  let password=false;task.onPassword=()=>{password=true;task.destroy();};
  let pdf;
  try{
@@ -628,36 +769,34 @@ async function readPDF(file){
   if(pdf.numPages>120)throw new Error('El PDF supera las 120 páginas. Dividilo en secciones para revisarlo.');
   const pages=[];const sparse=[];
   for(let n=1;n<=pdf.numPages;n++){
-   const page=await pdf.getPage(n);const content=await page.getTextContent();let text='';let prev=null;
-   for(const item of content.items){
-    if(typeof item.str!=='string')continue;
-    if(prev&&text&&!/\s$/.test(text)&&!/^\s/.test(item.str)){
-     const newLine=Math.abs(item.transform[5]-prev.transform[5])>Math.max(2,Math.abs(item.transform[3])*.5);
-     const gap=item.transform[4]-prev.transform[4]-prev.width;
-     if(newLine)text+='\n';else if(gap>Math.max(.5,Math.abs(item.transform[0])*.08))text+=' ';
-    }
-    text+=item.str;if(item.hasEOL)text+='\n';prev=item;
-   }
-   const annotations=await page.getAnnotations({intent:'display'});
-   const fields=annotations.filter(a=>a.subtype==='Widget'&&a.fieldType!=='Sig'&&a.fieldName&&a.fieldValue!==undefined&&a.fieldValue!==null&&String(a.fieldValue)!=='');
-   if(fields.length)text+='\n'+fields.map(a=>`[${a.fieldName}]: ${Array.isArray(a.fieldValue)?a.fieldValue.join(', '):a.fieldValue}`).join('\n');
-   if(normalize(text).length<15)sparse.push(n);pages.push(text.trim());page.cleanup();
+   const page=await pdf.getPage(n);
+   const {text}=await extractPdfPage(page);
+   if(normalize(text).length<15)sparse.push(n);
+   pages.push(text);
+   page.cleanup();
   }
   const text=pages.join('\n\n');
   if(normalize(text).length<15)throw new Error('No se encontró suficiente texto. Este PDF puede estar escaneado o vacío; necesita reconocimiento de texto (OCR).');
   if(text.length>400000)throw new Error('El PDF contiene demasiado texto para esta versión. Dividilo en secciones.');
-  return {name:file.name,pages,text,sparse};
+  return {name:file.name,kind:'pdf',file,pages,text,sparse};
  }catch(error){if(password)throw new Error('El PDF está protegido con contraseña. Cargá una copia desbloqueada.');throw error;}
  finally{if(pdf)await pdf.destroy().catch(()=>{});else await task.destroy().catch(()=>{});}
 }
 
 async function loadFile(side,file){
  if(!file||state.busy)return;
- const session=state.session;invalidate();state.docs[side]=null;$('text-'+side).value='';$('meta-'+side).textContent='Leyendo PDF…';setBusy(true,'Leyendo PDF…');notice();
+ const session=state.session;invalidate();state.docs[side]=null;$('text-'+side).value='';$('meta-'+side).textContent='Leyendo archivo…';setBusy(true,'Leyendo archivo…');notice();
  try{
-  const doc=await readPDF(file);if(session!==state.session)return;
+  if(file.size>15*1024*1024)throw new Error('El archivo supera los 15 MB.');
+  const name=file.name.toLowerCase();
+  const isDocx=name.endsWith('.docx')||file.type===docxMime;
+  if(!isDocx&&!name.endsWith('.pdf')&&file.type!=='application/pdf')throw new Error('Seleccioná un archivo PDF o Word (.docx).');
+  const doc=await (isDocx?readDOCX(file):readPDF(file));
+  if(session!==state.session)return;
+  if(side==='original')delete doc.file;
   state.docs[side]=doc;$('text-'+side).value=doc.text;
-  $('meta-'+side).textContent=`${doc.name} · ${doc.pages.length} página${doc.pages.length===1?'':'s'}${doc.sparse.length?' · Revisar páginas sin texto':''}`;
+  const unit=isDocx?'párrafo con texto':'página';
+  $('meta-'+side).textContent=`${doc.name} · ${doc.pages.length} ${doc.pages.length===1?unit:isDocx?'párrafos con texto':'páginas'}${doc.sparse.length?' · Revisar páginas sin texto':''}`;
   if(doc.sparse.length)notice(`El PDF ${doc.name} tiene poco o ningún texto en las páginas ${doc.sparse.join(', ')}. Esas páginas requieren revisión visual.`);
  }catch(error){if(session===state.session){$('meta-'+side).textContent='No se pudo leer el archivo';notice(friendlyError(error),true);}}
  finally{if(session===state.session){setBusy(false);$('file-'+side).value='';}}
@@ -668,7 +807,7 @@ for(const side of ['original','received']){
  const zone=$('drop-'+side);
  zone.addEventListener('dragover',event=>{event.preventDefault();if(!state.busy)zone.classList.add('dragover');});
  zone.addEventListener('dragleave',()=>zone.classList.remove('dragover'));
- zone.addEventListener('drop',event=>{event.preventDefault();zone.classList.remove('dragover');if(event.dataTransfer.files.length!==1){notice('Cargá un PDF por cada versión.',true);return;}loadFile(side,event.dataTransfer.files[0]);});
+ zone.addEventListener('drop',event=>{event.preventDefault();zone.classList.remove('dragover');if(event.dataTransfer.files.length!==1){notice('Cargá un archivo por cada versión.',true);return;}loadFile(side,event.dataTransfer.files[0]);});
  $('text-'+side).addEventListener('input',()=>{state.docs[side]=null;$('meta-'+side).textContent='Texto pegado o editado · Sin referencia de página';invalidate();notice();});
 }
 $('ignore-case').addEventListener('change',invalidate);
@@ -687,6 +826,11 @@ function pageRanges(doc){
 function pagesForSpan(ranges,span){
  if(!span)return [];
  return ranges.filter(page=>span.start<page.end&&span.end>page.start).map(page=>page.number);
+}
+function receivedTargets(ranges,span){
+ return ranges
+  .filter(range=>span.start<range.end&&span.end>range.start)
+  .map(range=>({page:range.number,start:Math.max(span.start,range.start)-range.start,end:Math.min(span.end,range.end)-range.start}));
 }
 function excerptAt(text,start,end){
  const preceding=text.lastIndexOf('. ',Math.max(0,start-1));
@@ -752,7 +896,8 @@ function makeDifferences(original,received,ignoreCase=false){
    before:source.slice(Math.max(0,span.start-140),span.start).trim(),
    after:source.slice(span.end,span.end+140).trim(),
    oldPages:pagesForSpan(oldRanges,removed),
-   newPages:pagesForSpan(newRanges,added)
+   newPages:pagesForSpan(newRanges,added),
+   targets:receivedTargets(newRanges,added ?? newTokens[newStart] ?? newTokens[newStart-1])
   });
  }
  return groupDifferences(differences,ignoreCase);
@@ -774,6 +919,7 @@ function groupDifferences(differences,ignoreCase){
   const group=groups.get(key);
   if(group){
    group.count++;
+   group.targets.push(...difference.targets);
    for(const page of difference.oldPages)group.oldPages.add(page);
    for(const page of difference.newPages)group.newPages.add(page);
   }else{
@@ -817,15 +963,17 @@ function defaultNote(d,language){
  return d.kind==='missing'?`Por favor, restituir el texto de la versión original: ${old}.`:d.kind==='added'?`Por favor, confirmar el texto agregado, que no figura en el original: ${value}.`:`Por favor, revisar este cambio: el original indica ${old}; la versión recibida indica ${value}.`;
 }
 const locationLabels={
- es:{original:'Original',received:'Recibido',page:'pág.',pages:'págs.',unpaged:'texto pegado, sin páginas',count:n=>`Aparece ${n} veces`},
- en:{original:'Original',received:'Received',page:'p.',pages:'pp.',unpaged:'pasted text, no page numbers',count:n=>`Appears ${n} times`},
- pt:{original:'Original',received:'Recebido',page:'pág.',pages:'págs.',unpaged:'texto colado, sem páginas',count:n=>`Aparece ${n} vezes`}
+ es:{original:'Original',received:'Recibido',page:'pág.',pages:'págs.',paragraph:'párr.',paragraphs:'párrs.',unpaged:'texto pegado',count:n=>`Aparece ${n} veces`},
+ en:{original:'Original',received:'Received',page:'p.',pages:'pp.',paragraph:'para.',paragraphs:'paras.',unpaged:'pasted text',count:n=>`Appears ${n} times`},
+ pt:{original:'Original',received:'Recebido',page:'pág.',pages:'págs.',paragraph:'parág.',paragraphs:'parágs.',unpaged:'texto colado',count:n=>`Aparece ${n} vezes`}
 };
 function describeLocation(side,pages,language='es'){
  const labels=locationLabels[language];
  const numbers=[...pages].sort((a,b)=>a-b);
+ const isWord=state.docs[side]?.kind==='docx';
+ const unit=isWord?(numbers.length===1?labels.paragraph:labels.paragraphs):(numbers.length===1?labels.page:labels.pages);
  const location=numbers.length
-  ? `${numbers.length===1?labels.page:labels.pages} ${numbers.join(', ')}`
+  ? `${unit} ${numbers.join(', ')}`
   : labels.unpaged;
  return `${labels[side]} · ${location}`;
 }
@@ -871,6 +1019,7 @@ function renderDifferences(){
    <div class="observation">
     <label for="note-${d.id}">Observación para el correo · Podés editarla</label>
     <textarea id="note-${d.id}" data-note="${d.id}" rows="2" autocomplete="off" spellcheck="false" autocorrect="off">${escapeHTML(d.note)}</textarea>
+    ${d.targets.length?`<button class="btn secondary small capture-trigger" type="button" data-capture="${d.id}">${state.docs.received.kind==='pdf'?'Ver captura del PDF':'Ver fragmento de Word'}</button>`:''}
    </div>`;
   list.append(article);
  }
@@ -892,29 +1041,274 @@ function generateDraft(){
  const message=messages[language];
  $('draft-to').value=$('seller-email').value.trim();$('draft-subject').value=message.subject;
  $('draft-body').value=[message.greeting,message.intro,selected.map((d,i)=>`${i+1}. ${d.note.trim()}\n   (${draftLocations(d,language)})`).join('\n\n'),message.closing].join('\n\n');
+ state.generatedBody=$('draft-body').value;
  state.draftRevision=state.revision;$('draft-state').textContent='EDITABLE';$('draft-state').classList.remove('draft-stale');$('open-mail').disabled=false;
+ $('copy-draft').disabled=false;
+ refreshMailLength();
  $('draft-panel').hidden=false;markSteps(3);$('draft-panel').scrollIntoView({behavior:'smooth',block:'start'});notice();
 }
 $('generate').addEventListener('click',generateDraft);
 function draftIsCurrent(){if(state.draftRevision!==state.revision){notice('La revisión cambió. Volvé a generar el borrador para incluir las observaciones actuales.',true);return false;}return true;}
-function validDraft(){if(!draftIsCurrent())return false;const input=$('draft-to');if(/[\r\n]/.test(input.value)||!input.checkValidity()||!input.value.trim()){notice('Ingresá un correo válido para el vendedor.',true);input.focus();return false;}if(!$('draft-body').value.trim()||!$('draft-subject').value.trim()){notice('Completá el asunto y el mensaje.',true);return false;}notice();return true;}
-$('open-mail').addEventListener('click',()=>{
- if(!validDraft())return;
+const maxMailLink=1800;
+const encodeMailText=value=>encodeURIComponent(value.replace(/[\uD800-\uDFFF]/gu,'�'));
+function mailLink(recipient,subject,body){
+ return 'mailto:'+encodeMailText(recipient)+'?subject='+encodeMailText(subject)+'&body='+encodeMailText(body.replace(/\r\n|\r|\n/g,'\r\n'));
+}
+function compactMailText(value,limit){
+ const text=normalize(value);
+ if(text.length<=limit)return text;
+ const clipped=Array.from(text).slice(0,limit-1).join('');
+ const boundary=clipped.lastIndexOf(' ');
+ return (boundary>limit*0.65?clipped.slice(0,boundary):clipped)+'…';
+}
+function fitMailText(value,fits){
+ const characters=Array.from(value);
+ let low=0;
+ let high=characters.length;
+ while(low<high){
+  const middle=Math.ceil((low+high)/2);
+  if(fits(characters.slice(0,middle).join('')+'…'))low=middle;
+  else high=middle-1;
+ }
+ return characters.slice(0,low).join('').trimEnd()+'…';
+}
+const compactMailCopy={
+ es:{intro:n=>'Revisión del contrato: '+n+' observaciones.',request:'Por favor, revisá estos puntos y enviá una versión corregida o tus comentarios.',extra:n=>'+ '+n+' observaciones adicionales.',edited:'[Mensaje abreviado]',kinds:{added:'Agregado',changed:'Cambio',missing:'Falta'}},
+ en:{intro:n=>'Contract review: '+n+' items.',request:'Please review these items and send a revised version or your comments.',extra:n=>'+ '+n+' additional items.',edited:'[Shortened message]',kinds:{added:'Added',changed:'Changed',missing:'Missing'}},
+ pt:{intro:n=>'Revisão do contrato: '+n+' observações.',request:'Por favor, revise estes pontos e envie uma versão corrigida ou seus comentários.',extra:n=>'+ '+n+' observações adicionais.',edited:'[Mensagem abreviada]',kinds:{added:'Adicionado',changed:'Alterado',missing:'Ausente'}}
+};
+function compactObservation(item,language,limit){
+ if(item.manual)return compactMailText(item.note,limit);
+ const kind=compactMailCopy[language].kinds[item.kind];
+ const excerpt=item.kind==='changed'
+  ? compactMailText(item.oldExcerpt,Math.floor(limit/2))+' → '+compactMailText(item.newExcerpt,Math.floor(limit/2))
+  : compactMailText(item.removed||item.added,limit);
+ const location=compactMailText(draftLocations(item,language),88);
+ return kind+': '+excerpt+' ('+location+')';
+}
+function prepareMailTransfer(recipient,subject,body,language,observations){
+ const original=mailLink(recipient,subject,body);
+ if(original.length<=maxMailLink)return {url:original,shortened:false};
+
+ const copy=compactMailCopy[language];
+ const conciseSubject=encodeMailText(subject).length<=260
+  ? subject
+  : fitMailText(subject,candidate=>encodeMailText(candidate).length<=260);
+ const fits=candidate=>mailLink(recipient,conciseSubject,candidate).length<=maxMailLink;
+ if(!observations?.length){
+  const normalized=body.replace(/\r\n|\r/g,'\n');
+  const shortenedBody=fitMailText(normalized,candidate=>fits(candidate+'\n\n'+copy.edited));
+  return {url:mailLink(recipient,conciseSubject,shortenedBody+'\n\n'+copy.edited),shortened:true};
+ }
+ const introduction=copy.intro(observations.length);
+ function compose(lines){
+  const extra=observations.length-lines.length;
+  return [introduction,lines.join('\n'),extra?copy.extra(extra):'',copy.request].filter(Boolean).join('\n\n');
+ }
+ // Prefer keeping every item, then show as many items as fit with an explicit remainder count.
+ for(const limit of [120,78,45]){
+  const lines=[];
+  for(const [index,item] of observations.entries()){
+   const line=(index+1)+'. '+compactObservation(item,language,limit);
+   if(!fits(compose([...lines,line])))break;
+   lines.push(line);
+  }
+  if(lines.length===observations.length||limit===45){
+   return {url:mailLink(recipient,conciseSubject,compose(lines)),shortened:true};
+  }
+ }
+}
+function currentMailTransfer(){
  const recipient=$('draft-to').value.trim();
- const subject=$('draft-subject').value.replace(/[\r\n]/g,' ');
- const body=$('draft-body').value.replace(/\r?\n/g,'\r\n');
- const url='mailto:'+encodeURIComponent(recipient)+'?subject='+encodeURIComponent(subject)+'&body='+encodeURIComponent(body);
- if(url.length>1900){
-  const area=$('draft-body');
-  area.focus();
-  area.select();
-  toast('El mensaje es largo. Copiá el texto seleccionado y pegalo en tu aplicación de correo.');
+ const subject=$('draft-subject').value.trim().replace(/[\r\n]+/g,' ');
+ const body=$('draft-body').value;
+ const unchanged=body===state.generatedBody;
+ const observations=unchanged?state.differences.filter(item=>item.selected):null;
+ return prepareMailTransfer(recipient,subject,body,$('language').value,observations);
+}
+function refreshMailLength(){
+ const transfer=currentMailTransfer();
+ $('open-mail').textContent=transfer.shortened?'Abrir resumen en correo ↗':'Abrir en correo ↗';
+ $('mail-transfer-status').textContent=transfer.shortened
+  ?'El correo se abrirá con un resumen. Podés copiar el borrador completo y pegarlo antes de enviar.'
+  :'Se abrirá un borrador en tu aplicación de correo.';
+}
+for(const id of ['draft-to','draft-subject','draft-body'])$(id).addEventListener('input',refreshMailLength);
+$('open-mail').addEventListener('click',()=>{
+ if(!draftIsCurrent())return;
+ const input=$('draft-to');
+ if(!input.checkValidity()||!input.value.trim()||input.value.trim().length>254){
+  $('mail-transfer-status').textContent='Ingresá un correo válido para el vendedor.';
+  input.focus();
   return;
  }
- const link=document.createElement('a');
- link.href=url;
- link.click();
+ if(!$('draft-body').value.trim()||!$('draft-subject').value.trim()){
+  $('mail-transfer-status').textContent='Completá el asunto y el mensaje.';
+  return;
+ }
+ const anchor=document.createElement('a');
+ anchor.href=currentMailTransfer().url;
+ anchor.click();
 });
+$('copy-draft').addEventListener('click',async()=>{
+ if(!draftIsCurrent())return;
+ const area=$('draft-body');
+ try{
+  await navigator.clipboard.writeText(area.value);
+  toast('Mensaje completo copiado.');
+ }catch{
+  area.focus();
+  area.select();
+  toast('Mensaje completo seleccionado. Usá la opción Copiar de tu dispositivo.');
+ }
+});
+
+let captureRequest=0;
+let captureDifference=null;
+function resetCaptureContent(){
+ const canvas=$('capture-canvas');
+ canvas.width=1;
+ canvas.height=1;
+ canvas.hidden=true;
+ $('capture-text').replaceChildren();
+ $('capture-text').hidden=true;
+ $('save-capture').hidden=true;
+}
+function clearCapture(){
+ captureRequest++;
+ captureDifference=null;
+ if($('capture-dialog').open)$('capture-dialog').close();
+ $('capture-page').replaceChildren();
+ $('capture-status').textContent='';
+ resetCaptureContent();
+}
+function startCapture(difference){
+ const received=state.docs.received;
+ if(!received||!difference?.targets.length)return;
+ clearCapture();
+ captureDifference=difference;
+ $('capture-title').textContent=received.kind==='pdf'?'Captura del PDF recibido':'Fragmento del Word recibido';
+ for(const page of [...new Set(difference.targets.map(target=>target.page))].sort((a,b)=>a-b)){
+  const option=document.createElement('option');
+  option.value=page;
+  option.textContent=(received.kind==='pdf'?'Página ':'Párrafo ')+page;
+  $('capture-page').append(option);
+ }
+ $('capture-dialog').showModal();
+ void refreshCapture();
+}
+
+function markWordFragment(text,spans){
+ const container=$('capture-text');
+ const ordered=[...spans].sort((a,b)=>a.start-b.start);
+ let cursor=0;
+ for(const span of ordered){
+  if(span.end<=cursor)continue;
+  container.append(document.createTextNode(text.slice(cursor,Math.max(cursor,span.start))));
+  const mark=document.createElement('mark');
+  mark.textContent=text.slice(Math.max(cursor,span.start),span.end);
+  container.append(mark);
+  cursor=span.end;
+ }
+ container.append(document.createTextNode(text.slice(cursor)));
+ container.hidden=false;
+}
+function hitBoxes(viewport,text,items,spans){
+ const boxes=[];
+ let cursor=0;
+ for(const item of items){
+  if(typeof item.str!=='string')continue;
+  const piece=normalize(item.str);
+  if(!piece)continue;
+  const start=text.indexOf(piece,cursor);
+  if(start<0)continue;
+  cursor=start+piece.length;
+  if(!spans.some(span=>span.start<cursor&&span.end>start))continue;
+  const [a,b,c,d,x,y]=item.transform;
+  const width=item.width||Math.hypot(a,b);
+  const height=item.height||Math.hypot(c,d);
+  const [x1,y1,x2,y2]=viewport.convertToViewportRectangle([x,y-height*0.25,x+width,y+height*0.85]);
+  boxes.push({left:Math.min(x1,x2),top:Math.min(y1,y2),width:Math.abs(x2-x1),height:Math.abs(y2-y1)});
+ }
+ return boxes;
+}
+async function renderPdfCapture(received,pageNumber,spans){
+ const task=await pdfTask(received.file);
+ try{
+  const document=await task.promise;
+  const page=await document.getPage(pageNumber);
+  const full=page.getViewport({scale:1});
+  const viewport=page.getViewport({scale:Math.min(2,1600/Math.max(full.width,full.height))});
+  const source=window.document.createElement('canvas');
+  source.width=Math.ceil(viewport.width);
+  source.height=Math.ceil(viewport.height);
+  await page.render({canvas:source,viewport,background:'#fff'}).promise;
+  const extracted=await extractPdfPage(page);
+  const boxes=hitBoxes(viewport,normalize(extracted.text),extracted.items,spans);
+  const top=boxes.length?Math.max(0,Math.floor(Math.min(...boxes.map(box=>box.top))-110)):0;
+  const bottom=boxes.length?Math.min(source.height,Math.ceil(Math.max(...boxes.map(box=>box.top+box.height))+110)):source.height;
+  return {source,top,height:bottom-top,boxes};
+ }finally{await task.destroy().catch(()=>{});}
+}
+async function refreshCapture(){
+ if(!captureDifference)return;
+ const request=++captureRequest;
+ const received=state.docs.received;
+ const pageNumber=Number($('capture-page').value);
+ const missing=captureDifference.kind==='missing';
+ const spans=captureDifference.targets.filter(target=>target.page===pageNumber);
+ resetCaptureContent();
+ const explanation=missing?'El texto falta. Se resalta un fragmento próximo al punto de referencia.':'Se resalta la línea del cambio en el documento recibido.';
+ if(received.kind==='docx'){
+  markWordFragment(normalize(received.pages[pageNumber-1]),spans);
+  $('capture-status').textContent=explanation+' La ubicación corresponde a un párrafo de Word.';
+  return;
+ }
+
+ $('capture-status').textContent='Generando captura…';
+ try{
+  const {source,top,height,boxes}=await renderPdfCapture(received,pageNumber,spans);
+  if(request!==captureRequest)return;
+  const canvas=$('capture-canvas');
+  canvas.width=source.width;
+  canvas.height=height;
+  const ctx=canvas.getContext('2d');
+  ctx.drawImage(source,0,top,source.width,height,0,0,source.width,height);
+  ctx.fillStyle='rgba(255, 200, 50, 0.28)';
+  ctx.strokeStyle='#b97500';
+  ctx.lineWidth=2;
+  for(const box of boxes){
+   ctx.fillRect(box.left-2,box.top-top,box.width+4,box.height);
+   ctx.strokeRect(box.left-2,box.top-top,box.width+4,box.height);
+  }
+  canvas.hidden=false;
+  $('save-capture').hidden=false;
+  $('capture-status').textContent=boxes.length?explanation:'Se muestra la página. No se pudo ubicar el cambio con precisión.';
+ }catch{
+  if(request===captureRequest)$('capture-status').textContent='No se pudo generar la captura de este PDF. Revisá la página indicada en tu visor.';
+ }
+}
+$('difference-list').addEventListener('click',event=>{
+ const trigger=event.target.closest('[data-capture]');
+ if(trigger)startCapture(state.differences[Number(trigger.dataset.capture)]);
+});
+$('capture-page').addEventListener('change',refreshCapture);
+$('close-capture').addEventListener('click',clearCapture);
+$('capture-dialog').addEventListener('cancel',event=>{event.preventDefault();clearCapture();});
+$('save-capture').addEventListener('click',()=>{
+ const request=captureRequest;
+ const page=$('capture-page').value;
+ $('capture-canvas').toBlob(blob=>{
+  if(!blob||request!==captureRequest)return;
+  const url=URL.createObjectURL(blob);
+  const link=document.createElement('a');
+  link.href=url;
+  link.download='captura-recibido-pagina-'+page+'.png';
+  link.click();
+  setTimeout(()=>URL.revokeObjectURL(url),1000);
+ },'image/png');
+});
+
 
 function resetReview(){
  state.session++;
@@ -957,7 +1351,8 @@ $('demo').addEventListener('click',async()=>{
   for(const side of ['original','received']){
    const bytes=Uint8Array.from(atob(exampleFiles[side]),character=>character.charCodeAt(0));
    const version=side==='original'?'original':'recibido';
-   const file=new File([bytes],'Ejemplo-'+version+'.pdf',{type:'application/pdf'});
+   const uncompressed=await new Response(new Blob([bytes]).stream().pipeThrough(new DecompressionStream('gzip'))).arrayBuffer();
+   const file=new File([uncompressed],'Ejemplo-'+version+'.pdf',{type:'application/pdf'});
    const doc=await readPDF(file);
    if(session!==state.session)return;
    state.docs[side]=doc;
